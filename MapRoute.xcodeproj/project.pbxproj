@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D39C727E1D79B85900E3F43E /* ZealandZones.json in Resources */ = {isa = PBXBuildFile; fileRef = D39C727D1D79B85900E3F43E /* ZealandZones.json */; };
+		D39C72801D79BBDA00E3F43E /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C727F1D79BBDA00E3F43E /* SwiftyJSON.swift */; };
 		D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385AE1D79A14800D05996 /* AppDelegate.swift */; };
 		D3E385B61D79A14800D05996 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3E385B41D79A14800D05996 /* Main.storyboard */; };
 		D3E385B81D79A14800D05996 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3E385B71D79A14800D05996 /* Assets.xcassets */; };
@@ -39,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		D39C727D1D79B85900E3F43E /* ZealandZones.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = ZealandZones.json; path = Resource/ZealandZones.json; sourceTree = "<group>"; };
+		D39C727F1D79BBDA00E3F43E /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = ThirdParty/SwiftyJSON/SwiftyJSON.swift; sourceTree = "<group>"; };
 		D3E385AB1D79A14800D05996 /* MapRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3E385AE1D79A14800D05996 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D3E385B51D79A14800D05996 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -83,6 +85,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D39C72811D79BBE500E3F43E /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				D39C72821D79BBF000E3F43E /* SwiftyJSON */,
+			);
+			name = ThirdParty;
+			sourceTree = "<group>";
+		};
+		D39C72821D79BBF000E3F43E /* SwiftyJSON */ = {
+			isa = PBXGroup;
+			children = (
+				D39C727F1D79BBDA00E3F43E /* SwiftyJSON.swift */,
+			);
+			name = SwiftyJSON;
+			sourceTree = "<group>";
+		};
 		D3B3A2A91D79B673008FD3F8 /* Storyboard */ = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +148,7 @@
 				D3EE3B981D79A66100B08B65 /* ViewController */,
 				D3B3A2A91D79B673008FD3F8 /* Storyboard */,
 				D3E385AE1D79A14800D05996 /* AppDelegate.swift */,
+				D39C72811D79BBE500E3F43E /* ThirdParty */,
 				D3B3A2AC1D79B6D2008FD3F8 /* Resource */,
 			);
 			path = MapRoute;
@@ -319,6 +338,7 @@
 				D3EE3B971D79A65A00B08B65 /* OptionsViewController.swift in Sources */,
 				D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */,
 				D3EE3B9A1D79A69C00B08B65 /* DataSource.swift in Sources */,
+				D39C72801D79BBDA00E3F43E /* SwiftyJSON.swift in Sources */,
 				D3EE3B961D79A65A00B08B65 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
