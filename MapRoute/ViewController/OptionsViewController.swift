@@ -1,5 +1,5 @@
 //
-//  SecondViewController.swift
+//  OptionsViewController.swift
 //  MapRoute
 //
 //  Created by Min Wu on 02/09/16.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SecondViewController: UIViewController {
+class OptionsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

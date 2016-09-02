@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385AE1D79A14800D05996 /* AppDelegate.swift */; };
-		D3E385B11D79A14800D05996 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385B01D79A14800D05996 /* FirstViewController.swift */; };
-		D3E385B31D79A14800D05996 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385B21D79A14800D05996 /* SecondViewController.swift */; };
 		D3E385B61D79A14800D05996 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3E385B41D79A14800D05996 /* Main.storyboard */; };
 		D3E385B81D79A14800D05996 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3E385B71D79A14800D05996 /* Assets.xcassets */; };
 		D3E385BB1D79A14800D05996 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3E385B91D79A14800D05996 /* LaunchScreen.storyboard */; };
 		D3E385C61D79A14800D05996 /* MapRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385C51D79A14800D05996 /* MapRouteTests.swift */; };
 		D3E385D11D79A14800D05996 /* MapRouteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385D01D79A14800D05996 /* MapRouteUITests.swift */; };
+		D3E385E01D79A1D800D05996 /* DataSource in Resources */ = {isa = PBXBuildFile; fileRef = D3E385DE1D79A1D800D05996 /* DataSource */; };
+		D3E385E11D79A1D800D05996 /* ViewController in Resources */ = {isa = PBXBuildFile; fileRef = D3E385DF1D79A1D800D05996 /* ViewController */; };
+		D3E385E31D79A49100D05996 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E385E21D79A49100D05996 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,8 +38,6 @@
 /* Begin PBXFileReference section */
 		D3E385AB1D79A14800D05996 /* MapRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3E385AE1D79A14800D05996 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D3E385B01D79A14800D05996 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		D3E385B21D79A14800D05996 /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		D3E385B51D79A14800D05996 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D3E385B71D79A14800D05996 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D3E385BA1D79A14800D05996 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -49,6 +48,9 @@
 		D3E385CC1D79A14800D05996 /* MapRouteUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapRouteUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3E385D01D79A14800D05996 /* MapRouteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouteUITests.swift; sourceTree = "<group>"; };
 		D3E385D21D79A14800D05996 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D3E385DE1D79A1D800D05996 /* DataSource */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataSource; sourceTree = "<group>"; };
+		D3E385DF1D79A1D800D05996 /* ViewController */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ViewController; sourceTree = "<group>"; };
+		D3E385E21D79A49100D05996 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3E385E31D79A49100D05996 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +82,7 @@
 		D3E385A21D79A14800D05996 = {
 			isa = PBXGroup;
 			children = (
+				D3E385E21D79A49100D05996 /* MapKit.framework */,
 				D3E385AD1D79A14800D05996 /* MapRoute */,
 				D3E385C41D79A14800D05996 /* MapRouteTests */,
 				D3E385CF1D79A14800D05996 /* MapRouteUITests */,
@@ -99,12 +103,12 @@
 		D3E385AD1D79A14800D05996 /* MapRoute */ = {
 			isa = PBXGroup;
 			children = (
+				D3E385DE1D79A1D800D05996 /* DataSource */,
+				D3E385DF1D79A1D800D05996 /* ViewController */,
 				D3E385AE1D79A14800D05996 /* AppDelegate.swift */,
-				D3E385B01D79A14800D05996 /* FirstViewController.swift */,
-				D3E385B21D79A14800D05996 /* SecondViewController.swift */,
 				D3E385B41D79A14800D05996 /* Main.storyboard */,
-				D3E385B71D79A14800D05996 /* Assets.xcassets */,
 				D3E385B91D79A14800D05996 /* LaunchScreen.storyboard */,
+				D3E385B71D79A14800D05996 /* Assets.xcassets */,
 				D3E385BC1D79A14800D05996 /* Info.plist */,
 			);
 			path = MapRoute;
@@ -233,6 +237,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3E385BB1D79A14800D05996 /* LaunchScreen.storyboard in Resources */,
+				D3E385E11D79A1D800D05996 /* ViewController in Resources */,
+				D3E385E01D79A1D800D05996 /* DataSource in Resources */,
 				D3E385B81D79A14800D05996 /* Assets.xcassets in Resources */,
 				D3E385B61D79A14800D05996 /* Main.storyboard in Resources */,
 			);
@@ -259,9 +265,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3E385B31D79A14800D05996 /* SecondViewController.swift in Sources */,
 				D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */,
-				D3E385B11D79A14800D05996 /* FirstViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +329,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -353,9 +358,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LLVM_LTO = YES;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -371,6 +378,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -387,15 +395,19 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LLVM_LTO = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
