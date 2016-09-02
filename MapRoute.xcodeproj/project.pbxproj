@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D39C727E1D79B85900E3F43E /* ZealandZones.json in Resources */ = {isa = PBXBuildFile; fileRef = D39C727D1D79B85900E3F43E /* ZealandZones.json */; };
 		D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385AE1D79A14800D05996 /* AppDelegate.swift */; };
 		D3E385B61D79A14800D05996 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3E385B41D79A14800D05996 /* Main.storyboard */; };
 		D3E385B81D79A14800D05996 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3E385B71D79A14800D05996 /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D39C727D1D79B85900E3F43E /* ZealandZones.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = ZealandZones.json; path = Resource/ZealandZones.json; sourceTree = "<group>"; };
 		D3E385AB1D79A14800D05996 /* MapRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3E385AE1D79A14800D05996 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D3E385B51D79A14800D05996 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -81,6 +83,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D3B3A2A91D79B673008FD3F8 /* Storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				D3E385B41D79A14800D05996 /* Main.storyboard */,
+				D3E385B91D79A14800D05996 /* LaunchScreen.storyboard */,
+			);
+			name = Storyboard;
+			sourceTree = "<group>";
+		};
+		D3B3A2AC1D79B6D2008FD3F8 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				D39C727D1D79B85900E3F43E /* ZealandZones.json */,
+				D3E385B71D79A14800D05996 /* Assets.xcassets */,
+				D3E385BC1D79A14800D05996 /* Info.plist */,
+			);
+			name = Resource;
+			sourceTree = "<group>";
+		};
 		D3E385A21D79A14800D05996 = {
 			isa = PBXGroup;
 			children = (
@@ -107,11 +128,9 @@
 			children = (
 				D3EE3B9B1D79A6A300B08B65 /* DataSource */,
 				D3EE3B981D79A66100B08B65 /* ViewController */,
+				D3B3A2A91D79B673008FD3F8 /* Storyboard */,
 				D3E385AE1D79A14800D05996 /* AppDelegate.swift */,
-				D3E385B41D79A14800D05996 /* Main.storyboard */,
-				D3E385B91D79A14800D05996 /* LaunchScreen.storyboard */,
-				D3E385B71D79A14800D05996 /* Assets.xcassets */,
-				D3E385BC1D79A14800D05996 /* Info.plist */,
+				D3B3A2AC1D79B6D2008FD3F8 /* Resource */,
 			);
 			path = MapRoute;
 			sourceTree = "<group>";
@@ -272,6 +291,7 @@
 				D3E385BB1D79A14800D05996 /* LaunchScreen.storyboard in Resources */,
 				D3E385B81D79A14800D05996 /* Assets.xcassets in Resources */,
 				D3E385B61D79A14800D05996 /* Main.storyboard in Resources */,
+				D39C727E1D79B85900E3F43E /* ZealandZones.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

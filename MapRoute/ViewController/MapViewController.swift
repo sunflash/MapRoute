@@ -7,12 +7,19 @@
 //
 
 import UIKit
+import MapKit
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, MKMapViewDelegate {
+    
+    @IBOutlet weak private var mapView : MKMapView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        self.mapView.showsPointsOfInterest = false
+        self.mapView.delegate = self
+
         
         print("\(DataSource.highLightZones())")
     }
@@ -23,5 +30,6 @@ class MapViewController: UIViewController {
     }
 
 
+    
 }
 

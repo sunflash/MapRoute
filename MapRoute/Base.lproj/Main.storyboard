@@ -29,6 +29,9 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Map" image="second" id="acW-dT-cKf"/>
+                    <connections>
+                        <outlet property="mapView" destination="bLK-fu-XYB" id="dyE-nB-h5Q"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W5J-7L-Pyd" sceneMemberID="firstResponder"/>
             </objects>
