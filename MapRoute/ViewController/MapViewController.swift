@@ -28,6 +28,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         self.addOverlays()
         self.mapView.showsPointsOfInterest = false
+        self.mapView.isRotateEnabled = false
+        self.mapView.isPitchEnabled = false
         self.mapView.delegate = self
     }
 
@@ -62,8 +64,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             let render = MKPolygonRenderer(overlay: overlay)
             render.strokeColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
-            render.lineWidth = 3;
-//            render.fillColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
+            render.lineWidth = 1;
+            render.fillColor = #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1).withAlphaComponent(0.7)
             return render
         }
         return  MKOverlayRenderer(overlay: overlay)
@@ -84,14 +86,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             zoneNumberLabel.text = annotation.title ?? ""
         } else {
         
-            let zoneNumberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+            let zoneNumberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 26, height: 26))
             zoneNumberLabel.textAlignment = .center
             zoneNumberLabel.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
             zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
             zoneNumberLabel.text = annotation.title ?? ""
             zoneNumberLabel.tag = self.zoomLabelTag
             zoneNumberLabel.layer.backgroundColor = #colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1).cgColor
-            zoneNumberLabel.layer.cornerRadius = 15
+            zoneNumberLabel.layer.cornerRadius = 13
             zoneNumberLabel.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1).cgColor
             zoneNumberLabel.layer.borderWidth = 1
             annotationView.addSubview(zoneNumberLabel)
