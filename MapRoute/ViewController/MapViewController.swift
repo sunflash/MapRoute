@@ -17,7 +17,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private var polygons = [MKPolygon]()
     private var annotations = [MKPointAnnotation]()
     
-    private let zoomLabelTag = 8
+    private let zoneLabelTag = 8
+    private let zoneLabelBackgroundColor = #colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1)
+    private let zoneLabelBorderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+    private let zoneLabelTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+    
+    private let zonePolygonBorderPathColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
+    private let zonePolygonDeselectColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
+    private let zonePolygonNeighbourZoneColor = #colorLiteral(red: 0.1764705926, green: 0.4980392158, blue: 0.7568627596, alpha: 1)
+    private let zonePolygonSelectedColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
     
     //------------------------------------------------------------------------------------------
     // MARK: - View
@@ -83,9 +91,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let polygonPoint = polygonRender.point(for: tapMapPoint)
             guard polygonRender.path.contains(polygonPoint) != false else {continue}
             
-            polygonRender.fillColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
-            
-            
+            polygonRender.fillColor = self.zonePolygonSelectedColor.withAlphaComponent(0.7)
         }
     }
     
@@ -97,9 +103,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         if overlay is MKPolygon {
             
             let render = MKPolygonRenderer(overlay: overlay)
-            render.strokeColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
+            render.strokeColor = self.zonePolygonBorderPathColor
             render.lineWidth = 1;
-            render.fillColor = #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1).withAlphaComponent(0.7)
+            render.fillColor = self.zonePolygonDeselectColor.withAlphaComponent(0.7)
             return render
         }
         return  MKOverlayRenderer(overlay: overlay)
@@ -114,21 +120,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let identifier = "zoneNumber"
         let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) ?? MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         annotationView.annotation = annotation
-        annotationView.canShowCallout = true
+        annotationView.canShowCallout = false
         
-        if let zoneNumberLabel = annotationView.viewWithTag(self.zoomLabelTag) as? UILabel {
+        if let zoneNumberLabel = annotationView.viewWithTag(self.zoneLabelTag) as? UILabel {
             zoneNumberLabel.text = annotation.title ?? ""
         } else {
         
             let zoneNumberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 26, height: 26))
             zoneNumberLabel.textAlignment = .center
-            zoneNumberLabel.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+            zoneNumberLabel.textColor = self.zoneLabelTextColor
             zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
             zoneNumberLabel.text = annotation.title ?? ""
-            zoneNumberLabel.tag = self.zoomLabelTag
-            zoneNumberLabel.layer.backgroundColor = #colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1).cgColor
+            zoneNumberLabel.tag = self.zoneLabelTag
+            zoneNumberLabel.layer.backgroundColor = self.zoneLabelBackgroundColor.cgColor
             zoneNumberLabel.layer.cornerRadius = 13
-            zoneNumberLabel.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1).cgColor
+            zoneNumberLabel.layer.borderColor = self.zoneLabelBorderColor.cgColor
             zoneNumberLabel.layer.borderWidth = 1
             annotationView.addSubview(zoneNumberLabel)
         }
