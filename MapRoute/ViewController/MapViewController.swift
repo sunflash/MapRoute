@@ -17,6 +17,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private var polygons = [MKPolygon]()
     private var annotations = [MKPointAnnotation]()
     
+    private var selectedZones = Set<String>()
+    
     private let zoneLabelTag = 8
     private let zoneLabelBackgroundColor = #colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1)
     private let zoneLabelBorderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
@@ -76,6 +78,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    func polygonFillColor(zoneNumber: String?) -> UIColor {
+        
+        if let number = zoneNumber, selectedZones.contains(number) {
+            return self.zonePolygonSelectedColor.withAlphaComponent(0.7)
+        } else {
+            return self.zonePolygonDeselectColor.withAlphaComponent(0.7)
+        }
+    }
+    
     //------------------------------------------------------------------------------------------
     // MARK: - User Action
     
@@ -85,13 +96,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let tapCoordinate = self.mapView.convert(tapPoint, toCoordinateFrom: self.mapView)
         let tapMapPoint = MKMapPointForCoordinate(tapCoordinate)
         
-        for polygon in self.mapView.overlays {
+        for overlay in self.mapView.overlays {
             
-            guard let polygonRender = self.mapView.renderer(for: polygon) as? MKPolygonRenderer else {continue}
+            guard let polygon = overlay as? MKPolygon, let polygonRender = self.mapView.renderer(for: polygon) as? MKPolygonRenderer else {continue}
             let polygonPoint = polygonRender.point(for: tapMapPoint)
             guard polygonRender.path.contains(polygonPoint) != false else {continue}
             
-            polygonRender.fillColor = self.zonePolygonSelectedColor.withAlphaComponent(0.7)
+            guard let zoneNumber = polygon.title else {continue}
+            if selectedZones.contains(zoneNumber) {
+                selectedZones.remove(zoneNumber)
+            } else {
+                selectedZones.insert(zoneNumber)
+            }
+            polygonRender.fillColor = self.polygonFillColor(zoneNumber: zoneNumber)
         }
     }
     
@@ -100,12 +117,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         
-        if overlay is MKPolygon {
+        if let polygon = overlay as? MKPolygon {
             
-            let render = MKPolygonRenderer(overlay: overlay)
+            let render = MKPolygonRenderer(polygon: polygon)
             render.strokeColor = self.zonePolygonBorderPathColor
             render.lineWidth = 1;
-            render.fillColor = self.zonePolygonDeselectColor.withAlphaComponent(0.7)
+            render.fillColor = self.polygonFillColor(zoneNumber: polygon.title)
             return render
         }
         return  MKOverlayRenderer(overlay: overlay)
