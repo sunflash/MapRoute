@@ -25,20 +25,33 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        self.addOverlays()
-        self.mapView.showsPointsOfInterest = false
-        self.mapView.isRotateEnabled = false
-        self.mapView.isPitchEnabled = false
-        self.mapView.delegate = self
+        self.configureMapView()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    private func configureMapView() {
+    
+        self.addMapOverlays()
+        self.mapView.showsPointsOfInterest = false
+        self.mapView.isRotateEnabled = false
+        self.mapView.isPitchEnabled = false
+        self.mapView.delegate = self
+        
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(tap:)))
+        singleTap.numberOfTapsRequired = 1
+        
+        let doubleTap = UITapGestureRecognizer(target: self, action: nil)
+        doubleTap.numberOfTapsRequired = 2
+        singleTap.require(toFail: doubleTap)
+        self.mapView.addGestureRecognizer(singleTap)
+        self.mapView.addGestureRecognizer(doubleTap)
+    }
 
-    private func addOverlays() {
+    private func addMapOverlays() {
         
         DataSource.sharedDataSource.zoneData { zoneInfo, polygons, annotations in
             
@@ -52,6 +65,27 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 self.mapView.addOverlays(self.polygons, level: MKOverlayLevel.aboveLabels)
                 self.mapView.showAnnotations(self.annotations, animated: false)
             }
+        }
+    }
+    
+    //------------------------------------------------------------------------------------------
+    // MARK: - User Action
+    
+    func handleMapTap(tap: UIGestureRecognizer) {
+        
+        let tapPoint = tap.location(in: self.mapView)
+        let tapCoordinate = self.mapView.convert(tapPoint, toCoordinateFrom: self.mapView)
+        let tapMapPoint = MKMapPointForCoordinate(tapCoordinate)
+        
+        for polygon in self.mapView.overlays {
+            
+            guard let polygonRender = self.mapView.renderer(for: polygon) as? MKPolygonRenderer else {continue}
+            let polygonPoint = polygonRender.point(for: tapMapPoint)
+            guard polygonRender.path.contains(polygonPoint) != false else {continue}
+            
+            polygonRender.fillColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+            
+            
         }
     }
     
