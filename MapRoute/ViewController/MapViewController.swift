@@ -127,17 +127,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private enum ZoneAction {
         case Selected
         case Deselected
+        case Invalid
     }
     
     private func tapOnZone(zoneNumber: String) -> ZoneAction {
         
-        var zoneAction = ZoneAction.Selected
-        
+        var zoneAction = ZoneAction.Invalid
         if selectedZones.contains(zoneNumber) {
             selectedZones.remove(zoneNumber)
             zoneAction = .Deselected
-        } else {
+        } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber) {
             selectedZones.insert(zoneNumber)
+        } else {
+            print("Tap zone isn't neighbour zone to selected zones.")
         }
         return zoneAction
     }
@@ -162,6 +164,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 polygonRender.fillColor = polygonFillColor(state: .Deselect)
             case .Selected:
                 polygonRender.fillColor = polygonFillColor(state: .Select)
+            default:
+                return
             }
     
             self.updateNeighbourZone(tapZoneNumber: zoneNumber, action: action)
