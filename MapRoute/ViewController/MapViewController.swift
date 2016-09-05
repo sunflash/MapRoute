@@ -79,11 +79,26 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    func polygonFillColor(zoneNumber: String?) -> UIColor {
+    private enum ZonePolygonHighlightState {
+        case Select
+        case Deselect
+    }
+    
+    private func polygonFillColor(zoneNumber: String?) -> UIColor {
         
         if let number = zoneNumber, selectedZones.contains(number) {
-            return self.zonePolygonSelectedColor.withAlphaComponent(0.7)
+            return polygonFillColor(state: .Select)
         } else {
+            return polygonFillColor(state: .Deselect)
+        }
+    }
+    
+    private func polygonFillColor(state: ZonePolygonHighlightState) -> UIColor {
+    
+        switch state {
+        case .Select:
+            return self.zonePolygonSelectedColor.withAlphaComponent(0.7)
+        case .Deselect:
             return self.zonePolygonDeselectColor.withAlphaComponent(0.7)
         }
     }
@@ -103,6 +118,24 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    private enum ZoneAction {
+        case Selected
+        case Deselected
+    }
+    
+    private func tapOnZone(zoneNumber: String) -> ZoneAction {
+        
+        var zoneAction = ZoneAction.Selected
+        
+        if selectedZones.contains(zoneNumber) {
+            selectedZones.remove(zoneNumber)
+            zoneAction = .Deselected
+        } else {
+            selectedZones.insert(zoneNumber)
+        }
+        return zoneAction
+    }
+    
     func handleMapTap(tap: UIGestureRecognizer) {
         
         let tapPoint = tap.location(in: self.mapView)
@@ -116,14 +149,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             guard polygonRender.path.contains(polygonPoint) != false else {return false}
             
             let zoneNumber = polygonInfo.zoneNumber
+            let action = self.tapOnZone(zoneNumber: zoneNumber)
             
-            if selectedZones.contains(zoneNumber) {
-                selectedZones.remove(zoneNumber)
-            } else {
-                selectedZones.insert(zoneNumber)
+            switch action {
+            case .Deselected:
+                polygonRender.fillColor = polygonFillColor(state: .Deselect)
+            case .Selected:
+                polygonRender.fillColor = polygonFillColor(state: .Select)
             }
-            polygonRender.fillColor = self.polygonFillColor(zoneNumber: zoneNumber)
-            
+    
             self.updateNeighbourZone(tapZoneNumber: zoneNumber)
             return true
         }
