@@ -138,6 +138,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             zoneAction = .Deselected
         } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber) {
             selectedZones.insert(zoneNumber)
+            zoneAction = .Selected
         } else {
             print("Tap zone isn't neighbour zone to selected zones.")
         }
@@ -175,24 +176,60 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private func updateNeighbourZone(tapZoneNumber: String, action: ZoneAction) {
         
+        guard action != .Invalid else {return}
+        
         if let zones = self.zoneData[tapZoneNumber]?.neighbourZones {
             
-            var newNeighbourZones = Set(zones)
-            newNeighbourZones = newNeighbourZones.subtracting(self.neighbourZones)
-            self.neighbourZones = self.neighbourZones.union(zones)
+            let newNeighbourZones : (Set<String>) -> Set<String> = {zones in
+                
+                var newNeighbourZones = Set(zones)
+                newNeighbourZones = newNeighbourZones.subtracting(self.neighbourZones)
+                newNeighbourZones = newNeighbourZones.subtracting(self.selectedZones)
+                self.neighbourZones = self.neighbourZones.union(zones)
+                return newNeighbourZones
+            }
             
+            let removeNeighbourZones : (String,Set<String>) -> Set<String> = { tapZone, zones in
+                
+                var removeNeighbourZones = Set(zones)
+                removeNeighbourZones = removeNeighbourZones.subtracting(self.selectedZones)
+                for selectedZone in self.selectedZones {
+                    guard tapZone != selectedZone, let neighbourZones = self.zoneData[selectedZone]?.neighbourZones else {continue}
+                    removeNeighbourZones = removeNeighbourZones.subtracting(neighbourZones)
+                }
+                self.neighbourZones = self.neighbourZones.subtracting(removeNeighbourZones)
+                return removeNeighbourZones
+            }
             
+            var updateZones = Set<String>()
             
+            switch action {
+            case .Selected:
+                updateZones = newNeighbourZones(zones)
+            case .Deselected:
+                updateZones = removeNeighbourZones(tapZoneNumber,zones)
+            default:
+                break
+            }
             
-            
-            let updateTotalCount = newNeighbourZones.count
+            let updateTotalCount = updateZones.count
             var updateCount = 0
+            
+            guard updateTotalCount != 0 else {return}
             
             self.mapViewPolygon { zonePolygonInfo in
                 
-                guard newNeighbourZones.contains(zonePolygonInfo.zoneNumber) else {return false}
+                guard updateZones.contains(zonePolygonInfo.zoneNumber) else {return false}
                 guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
-                polygonRender.fillColor = self.zonePolygonNeighbourZoneColor.withAlphaComponent(0.7)
+                
+                switch action {
+                case .Selected:
+                    polygonRender.fillColor = self.polygonFillColor(state: .Neighbour)
+                case .Deselected:
+                    polygonRender.fillColor = self.polygonFillColor(state: .Deselect)
+                default:
+                    break
+                }
                 
                 print(zonePolygonInfo.zoneNumber)
                 
