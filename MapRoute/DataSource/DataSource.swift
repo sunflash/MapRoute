@@ -53,8 +53,8 @@ class DataSource {
                 
                 let nameO = zoneInfo["properties","Name"].string
                 let zoneNumberO = zoneInfo["properties","Shortname"].string
-                let neighbourZonesO = zoneInfo["properties","NeighbourZones"].string?.characters.split(separator: ",").map(String.init).map{String($0.replacingOccurrences(of:"0", with:"").characters.dropFirst())}
-                let centerCoordinateO = zoneInfo["properties","PolygonCentroid"].string?.characters.split(separator: ",").map(String.init)
+                let neighbourZonesO = zoneInfo["properties","NeighbourZones"].string?.components(separatedBy: ",").filter{Int($0) != nil}.map{String(Int($0)!-1000)}
+                let centerCoordinateO = zoneInfo["properties","PolygonCentroid"].string?.components(separatedBy: ",")
                 guard let name = nameO, let zoneNumber = zoneNumberO, let neighbourZones = neighbourZonesO else {continue}
                 guard let centerCoordinate = centerCoordinateO, let centerLat = Double(centerCoordinate[1]), let centerLon = Double(centerCoordinate[0]) else {continue}
                 let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
