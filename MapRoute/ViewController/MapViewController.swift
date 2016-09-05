@@ -13,11 +13,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak private var mapView : MKMapView!
     
-    private var zoneInfo = [String:FareZone]()
+    private var zoneData = [String:FareZone]()
     private var polygons = [MKPolygon]()
     private var annotations = [MKPointAnnotation]()
     
     private var selectedZones = Set<String>()
+    private var neighbourZones = Set<String>()
     
     private let zoneLabelTag = 8
     private let zoneLabelBackgroundColor = #colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1)
@@ -63,11 +64,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     private func addMapOverlays() {
         
-        DataSource.sharedDataSource.zoneData { zoneInfo, polygons, annotations in
+        DataSource.sharedDataSource.zoneData { zoneData, polygons, annotations in
             
             DispatchQueue.main.async {
                 
-                self.zoneInfo = zoneInfo
+                self.zoneData = zoneData
                 self.polygons = polygons
                 self.annotations = annotations
                 
@@ -109,6 +110,28 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 selectedZones.insert(zoneNumber)
             }
             polygonRender.fillColor = self.polygonFillColor(zoneNumber: zoneNumber)
+            
+            self.updateNeighbourZone(tapZoneNumber: zoneNumber)
+            break
+        }
+    }
+    
+    func updateNeighbourZone(tapZoneNumber: String) {
+        
+        if let zones = self.zoneData[tapZoneNumber]?.neighbourZones {
+            
+            var newNeighbourZones = Set(zones)
+            newNeighbourZones = newNeighbourZones.subtracting(self.neighbourZones)
+            self.neighbourZones = self.neighbourZones.union(zones)
+            
+            print(newNeighbourZones)
+            
+            for overlay in self .mapView.overlays {
+                
+                guard let polygon = overlay as? MKPolygon, let zoneNumber = polygon.title, newNeighbourZones.contains(zoneNumber) else {continue}
+                guard let polygonRender = self.mapView.renderer(for: polygon) as? MKPolygonRenderer else {continue};
+                polygonRender.fillColor = self.zonePolygonNeighbourZoneColor.withAlphaComponent(0.7)
+            }
         }
     }
     

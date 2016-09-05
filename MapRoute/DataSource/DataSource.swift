@@ -13,7 +13,7 @@ struct FareZone {
     
     let name: String
     let zoneNumber: String
-    let neighbourZones: Array<String>
+    let neighbourZones: Set<String>
     let centerCoordinate: CLLocationCoordinate2D
     let polygon: MKPolygon
 }
@@ -53,7 +53,7 @@ class DataSource {
                 
                 let nameO = zoneInfo["properties","Name"].string
                 let zoneNumberO = zoneInfo["properties","Shortname"].string
-                let neighbourZonesO = zoneInfo["properties","NeighbourZones"].string?.characters.split(separator: ",").map(String.init)
+                let neighbourZonesO = zoneInfo["properties","NeighbourZones"].string?.characters.split(separator: ",").map(String.init).map{String($0.replacingOccurrences(of:"0", with:"").characters.dropFirst())}
                 let centerCoordinateO = zoneInfo["properties","PolygonCentroid"].string?.characters.split(separator: ",").map(String.init)
                 guard let name = nameO, let zoneNumber = zoneNumberO, let neighbourZones = neighbourZonesO else {continue}
                 guard let centerCoordinate = centerCoordinateO, let centerLat = Double(centerCoordinate[1]), let centerLon = Double(centerCoordinate[0]) else {continue}
@@ -67,7 +67,7 @@ class DataSource {
                 polygon.title = zoneNumber
                 zonePolygons += [polygon]
                 
-                let zone = FareZone(name: name, zoneNumber: zoneNumber, neighbourZones: neighbourZones, centerCoordinate: center, polygon: polygon)
+                let zone = FareZone(name: name, zoneNumber: zoneNumber, neighbourZones: Set(neighbourZones), centerCoordinate: center, polygon: polygon)
                 zoneData[zoneNumber] = zone
             }
             
