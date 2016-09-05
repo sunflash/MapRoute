@@ -136,7 +136,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return zoneAction
     }
     
-    func handleMapTap(tap: UIGestureRecognizer) {
+    @objc private func handleMapTap(tap: UIGestureRecognizer) {
         
         let tapPoint = tap.location(in: self.mapView)
         let tapCoordinate = self.mapView.convert(tapPoint, toCoordinateFrom: self.mapView)
@@ -158,12 +158,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 polygonRender.fillColor = polygonFillColor(state: .Select)
             }
     
-            self.updateNeighbourZone(tapZoneNumber: zoneNumber)
+            self.updateNeighbourZone(tapZoneNumber: zoneNumber, action: action)
             return true
         }
     }
     
-    func updateNeighbourZone(tapZoneNumber: String) {
+    private func updateNeighbourZone(tapZoneNumber: String, action: ZoneAction) {
         
         if let zones = self.zoneData[tapZoneNumber]?.neighbourZones {
             
@@ -171,7 +171,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             newNeighbourZones = newNeighbourZones.subtracting(self.neighbourZones)
             self.neighbourZones = self.neighbourZones.union(zones)
             
-            print(newNeighbourZones)
+            
+            
+            
             
             let updateTotalCount = newNeighbourZones.count
             var updateCount = 0
