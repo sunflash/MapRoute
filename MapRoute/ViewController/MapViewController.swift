@@ -165,7 +165,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             case .Selected:
                 polygonRender.fillColor = polygonFillColor(state: .Select)
             default:
-                return
+                break
             }
     
             self.updateNeighbourZone(tapZoneNumber: zoneNumber, action: action)
