@@ -91,19 +91,32 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     //------------------------------------------------------------------------------------------
     // MARK: - User Action
     
+    typealias zonePolygonInfo = (zoneNumber:String,polygon:MKPolygon)
+    
+    func mapViewPolygon(enumerate:(zonePolygonInfo)->Bool) {
+        
+        for overlay in self.mapView.overlays {
+            guard let polygon = overlay as? MKPolygon, let zoneNumber = polygon.title else {continue}
+            let polygonInfo:zonePolygonInfo = (zoneNumber,polygon)
+            let stop = enumerate(polygonInfo)
+            if stop == true {break}
+        }
+    }
+    
     func handleMapTap(tap: UIGestureRecognizer) {
         
         let tapPoint = tap.location(in: self.mapView)
         let tapCoordinate = self.mapView.convert(tapPoint, toCoordinateFrom: self.mapView)
         let tapMapPoint = MKMapPointForCoordinate(tapCoordinate)
         
-        for overlay in self.mapView.overlays {
+        self.mapViewPolygon { polygonInfo in
             
-            guard let polygon = overlay as? MKPolygon, let polygonRender = self.mapView.renderer(for: polygon) as? MKPolygonRenderer else {continue}
+            guard let polygonRender = self.mapView.renderer(for: polygonInfo.polygon) as? MKPolygonRenderer else {return false}
             let polygonPoint = polygonRender.point(for: tapMapPoint)
-            guard polygonRender.path.contains(polygonPoint) != false else {continue}
+            guard polygonRender.path.contains(polygonPoint) != false else {return false}
             
-            guard let zoneNumber = polygon.title else {continue}
+            let zoneNumber = polygonInfo.zoneNumber
+            
             if selectedZones.contains(zoneNumber) {
                 selectedZones.remove(zoneNumber)
             } else {
@@ -112,7 +125,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             polygonRender.fillColor = self.polygonFillColor(zoneNumber: zoneNumber)
             
             self.updateNeighbourZone(tapZoneNumber: zoneNumber)
-            break
+            return true
         }
     }
     
@@ -126,11 +139,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             print(newNeighbourZones)
             
-            for overlay in self .mapView.overlays {
+            let updateTotalCount = newNeighbourZones.count
+            var updateCount = 0
+            
+            self.mapViewPolygon { zonePolygonInfo in
                 
-                guard let polygon = overlay as? MKPolygon, let zoneNumber = polygon.title, newNeighbourZones.contains(zoneNumber) else {continue}
-                guard let polygonRender = self.mapView.renderer(for: polygon) as? MKPolygonRenderer else {continue};
+                guard newNeighbourZones.contains(zonePolygonInfo.zoneNumber) else {return false}
+                guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
                 polygonRender.fillColor = self.zonePolygonNeighbourZoneColor.withAlphaComponent(0.7)
+                
+                print(zonePolygonInfo.zoneNumber)
+                
+                updateCount += 1
+                return (updateCount >= updateTotalCount)
             }
         }
     }
