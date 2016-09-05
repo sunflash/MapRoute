@@ -82,12 +82,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private enum ZonePolygonHighlightState {
         case Select
         case Deselect
+        case Neighbour
     }
     
     private func polygonFillColor(zoneNumber: String?) -> UIColor {
         
-        if let number = zoneNumber, selectedZones.contains(number) {
+        if let number = zoneNumber, self.selectedZones.contains(number) {
             return polygonFillColor(state: .Select)
+        } else if let number = zoneNumber, self.neighbourZones.contains(number) {
+            return polygonFillColor(state: .Neighbour)
         } else {
             return polygonFillColor(state: .Deselect)
         }
@@ -95,11 +98,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private func polygonFillColor(state: ZonePolygonHighlightState) -> UIColor {
     
+        let alpha: CGFloat = 0.7
         switch state {
         case .Select:
-            return self.zonePolygonSelectedColor.withAlphaComponent(0.7)
+            return self.zonePolygonSelectedColor.withAlphaComponent(alpha)
         case .Deselect:
-            return self.zonePolygonDeselectColor.withAlphaComponent(0.7)
+            return self.zonePolygonDeselectColor.withAlphaComponent(alpha)
+        case .Neighbour:
+            return self.zonePolygonNeighbourZoneColor.withAlphaComponent(alpha)
         }
     }
     
