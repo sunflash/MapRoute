@@ -185,7 +185,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
         let latitudeDelta = mapView.region.span.latitudeDelta
-        let hidden = latitudeDelta > 0.5
+        let hidden = latitudeDelta > 1.0
         
         for annotation in self.mapView.annotations {
             let annotationView = self.mapView.view(for: annotation)
