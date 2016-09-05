@@ -201,39 +201,37 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 return removeNeighbourZones
             }
             
-            var updateZones = Set<String>()
+            var addZones = Set<String>()
+            var removeZones = Set<String>()
             
             switch action {
             case .Selected:
-                updateZones = newNeighbourZones(zones)
+                addZones = newNeighbourZones(zones)
             case .Deselected:
-                updateZones = removeNeighbourZones(tapZoneNumber,zones)
+                removeZones = removeNeighbourZones(tapZoneNumber,zones)
+                if self.neighbourZones.contains(tapZoneNumber) {
+                    addZones = [tapZoneNumber]
+                }
             default:
                 break
             }
             
-            let updateTotalCount = updateZones.count
+            let updateTotalCount = addZones.count + removeZones.count
             var updateCount = 0
             
             guard updateTotalCount != 0 else {return}
             
             self.mapViewPolygon { zonePolygonInfo in
                 
-                guard updateZones.contains(zonePolygonInfo.zoneNumber) else {return false}
-                guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
-                
-                switch action {
-                case .Selected:
+                if addZones.contains(zonePolygonInfo.zoneNumber) {
+                    guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
                     polygonRender.fillColor = self.polygonFillColor(state: .Neighbour)
-                case .Deselected:
+                    updateCount += 1
+                } else if removeZones.contains(zonePolygonInfo.zoneNumber) {
+                    guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
                     polygonRender.fillColor = self.polygonFillColor(state: .Deselect)
-                default:
-                    break
+                    updateCount += 1
                 }
-                
-                print(zonePolygonInfo.zoneNumber)
-                
-                updateCount += 1
                 return (updateCount >= updateTotalCount)
             }
         }
