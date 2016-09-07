@@ -303,7 +303,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 zoneNumberLabel.text = annotation.title ?? ""
             } else {
                 
-                let zoneNumberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 26, height: 26))
+                let centerLabel:(CGFloat)->CGRect = { size in
+                    let point = -size/2
+                    return CGRect(x: point, y: point, width: size, height: size)
+                }
+                
+                let zoneNumberLabel = UILabel(frame: centerLabel(26))
                 zoneNumberLabel.textAlignment = .center
                 zoneNumberLabel.textColor = self.zoneLabelTextColor
                 zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
