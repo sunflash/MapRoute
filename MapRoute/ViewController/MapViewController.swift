@@ -91,7 +91,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         self.tapZoneLock = true
         
-        self.highlighZones(zones: DataSource.highLightZones())
+        let highlightZones = DataSource.highLightZones()
+        self.highlighZones(zones: highlightZones)
+        self.selectedZones = highlightZones
     
         let jouneyBegin = MKPointAnnotation()
         jouneyBegin.coordinate = CLLocationCoordinate2DMake( 55.683729, 12.590080)
