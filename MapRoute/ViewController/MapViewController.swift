@@ -15,7 +15,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private var zoneData = [String:FareZone]()
     private var polygons = [MKPolygon]()
-    private var annotations = [MKPointAnnotation]()
+    private var zoneAnnotations = [MKPointAnnotation]()
     
     private var selectedZones = Set<String>()
     private var neighbourZones = Set<String>()
@@ -70,11 +70,17 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 
                 self.zoneData = zoneData
                 self.polygons = polygons
-                self.annotations = annotations
+                self.zoneAnnotations = annotations
                 
-                guard self.polygons.count != 0, self.annotations.count != 0 else {return}
-                self.mapView.addOverlays(self.polygons, level: MKOverlayLevel.aboveLabels)
-                self.mapView.showAnnotations(self.annotations, animated: false)
+                if self.polygons.count > 0 {
+                    self.mapView.addOverlays(self.polygons, level: MKOverlayLevel.aboveLabels)
+                }
+                
+                if self.zoneAnnotations.count > 0 {
+                    self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
+                }
+                
+                //self.showJouney()
             }
         }
     }
@@ -270,13 +276,31 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             return nil
         }
         
-        let identifier = "zoneNumber"
-        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) ?? MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-        annotationView.annotation = annotation
-        annotationView.canShowCallout = false
-        
-        if let zoneNumberLabel = annotationView.viewWithTag(self.zoneLabelTag) as? UILabel {
-            zoneNumberLabel.text = annotation.title ?? ""
+        if self.zoneAnnotations.contains(annotation as! MKPointAnnotation) {
+            
+            let identifier = "zoneNumber"
+            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) ?? MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            annotationView.annotation = annotation
+            annotationView.canShowCallout = false
+            
+            if let zoneNumberLabel = annotationView.viewWithTag(self.zoneLabelTag) as? UILabel {
+                zoneNumberLabel.text = annotation.title ?? ""
+            } else {
+                
+                let zoneNumberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 26, height: 26))
+                zoneNumberLabel.textAlignment = .center
+                zoneNumberLabel.textColor = self.zoneLabelTextColor
+                zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
+                zoneNumberLabel.text = annotation.title ?? ""
+                zoneNumberLabel.tag = self.zoneLabelTag
+                zoneNumberLabel.layer.backgroundColor = self.zoneLabelBackgroundColor.cgColor
+                zoneNumberLabel.layer.cornerRadius = 13
+                zoneNumberLabel.layer.borderColor = self.zoneLabelBorderColor.cgColor
+                zoneNumberLabel.layer.borderWidth = 1
+                annotationView.addSubview(zoneNumberLabel)
+            }
+            return annotationView
+            
         } else {
         
             let zoneNumberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 26, height: 26))
@@ -301,6 +325,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let hidden = latitudeDelta > 1.0
         
         for annotation in self.mapView.annotations {
+            
+            guard let pointAnnotation = annotation as? MKPointAnnotation, self.zoneAnnotations.contains(pointAnnotation) else {return}
+            
             let annotationView = self.mapView.view(for: annotation)
             annotationView?.isHidden = hidden
         }
