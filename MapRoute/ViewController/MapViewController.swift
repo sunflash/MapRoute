@@ -91,21 +91,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         self.tapZoneLock = true
         
-        let highlightZones = DataSource.highLightZones()
-        self.highlighZones(zones: highlightZones)
-        self.selectedZones = highlightZones
-    
-        let jouneyBegin = MKPointAnnotation()
-        jouneyBegin.coordinate = CLLocationCoordinate2DMake( 55.683729, 12.590080)
-        jouneyBegin.title = "København, Frederiksberg, City"
-        jouneyBegin.subtitle = "Bredgade 36, 1260 København K"
-        
-        let jouneyEnd = MKPointAnnotation()
-        jouneyEnd.coordinate = CLLocationCoordinate2DMake(55.215841, 11.812547)
-        jouneyEnd.title = "Næstved"
-        jouneyEnd.subtitle = "Bystævnet 8, Rønnebæk, 4700 Næstved"
-        
-        self.mapView.showAnnotations([jouneyBegin,jouneyEnd], animated: false);
+        let higlightZonesInfo = DataSource.highLightZonesInfo()
+        self.highlighZones(zones: higlightZonesInfo.zones)
+        self.selectedZones = higlightZonesInfo.zones
+        self.mapView.showAnnotations(higlightZonesInfo.locations, animated: false)
     }
     
     private enum ZonePolygonHighlightState {
@@ -325,10 +314,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             }
             return annotationView
             
-        } else {
+        } else if let locationAnnotation = annotation as? LocationAnnotation {
             
-            let identifier = "pins"
-            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: locationAnnotation.identifier) ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: locationAnnotation.identifier)
             annotationView.annotation = annotation
             annotationView.canShowCallout = true
         }
