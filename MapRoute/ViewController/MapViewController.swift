@@ -87,15 +87,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    private func showJouney() {
-        
-        self.tapZoneLock = true
-        
-        let higlightZonesInfo = DataSource.highLightZonesInfo()
-        self.highlighZones(zones: higlightZonesInfo.zones)
-        self.selectedZones = higlightZonesInfo.zones
-        self.mapView.showAnnotations(higlightZonesInfo.locations, animated: false)
-    }
+    //------------------------------------------------------------------------------------------
+    // MARK: - MapView UI
     
     private enum ZonePolygonHighlightState {
         case Select
@@ -138,9 +131,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    //------------------------------------------------------------------------------------------
-    // MARK: - User Action
-    
     typealias zonePolygonInfo = (zoneNumber:String,polygon:MKPolygon)
     
     func mapViewPolygon(enumerate:(zonePolygonInfo)->Bool) {
@@ -151,6 +141,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let stop = enumerate(polygonInfo)
             if stop == true {break}
         }
+    }
+    
+    //------------------------------------------------------------------------------------------
+    // MARK: - User Action
+    
+    private func showJouney() {
+        
+        self.tapZoneLock = true
+        
+        let higlightZonesInfo = DataSource.highLightZonesInfo()
+        self.highlighZones(zones: higlightZonesInfo.zones)
+        self.selectedZones = higlightZonesInfo.zones
+        self.mapView.showAnnotations(higlightZonesInfo.locations, animated: false)
     }
     
     private enum ZoneAction {
