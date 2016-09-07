@@ -30,6 +30,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private let zonePolygonNeighbourZoneColor = #colorLiteral(red: 0.1764705926, green: 0.4980392158, blue: 0.7568627596, alpha: 1)
     private let zonePolygonSelectedColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
     
+    private var tapZoneLock = false
+    
     //------------------------------------------------------------------------------------------
     // MARK: - View
     
@@ -83,6 +85,25 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 //self.showJouney()
             }
         }
+    }
+    
+    private func showJouney() {
+        
+        self.tapZoneLock = true
+        
+        self.highlighZones(zones: DataSource.highLightZones())
+    
+        let jouneyBegin = MKPointAnnotation()
+        jouneyBegin.coordinate = CLLocationCoordinate2DMake( 55.683729, 12.590080)
+        jouneyBegin.title = "København, Frederiksberg, City"
+        jouneyBegin.subtitle = "Bredgade 36, 1260 København K"
+        
+        let jouneyEnd = MKPointAnnotation()
+        jouneyEnd.coordinate = CLLocationCoordinate2DMake(55.215841, 11.812547)
+        jouneyEnd.title = "Næstved"
+        jouneyEnd.subtitle = "Bystævnet 8, Rønnebæk, 4700 Næstved"
+        
+        self.mapView.showAnnotations([jouneyBegin,jouneyEnd], animated: false);
     }
     
     private enum ZonePolygonHighlightState {
@@ -163,6 +184,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     @objc private func handleMapTap(tap: UIGestureRecognizer) {
+        
+        guard tapZoneLock == false else {return}
         
         let tapPoint = tap.location(in: self.mapView)
         let tapCoordinate = self.mapView.convert(tapPoint, toCoordinateFrom: self.mapView)
@@ -302,21 +325,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             return annotationView
             
         } else {
-        
-            let zoneNumberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 26, height: 26))
-            zoneNumberLabel.textAlignment = .center
-            zoneNumberLabel.textColor = self.zoneLabelTextColor
-            zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
-            zoneNumberLabel.text = annotation.title ?? ""
-            zoneNumberLabel.tag = self.zoneLabelTag
-            zoneNumberLabel.layer.backgroundColor = self.zoneLabelBackgroundColor.cgColor
-            zoneNumberLabel.layer.cornerRadius = 13
-            zoneNumberLabel.layer.borderColor = self.zoneLabelBorderColor.cgColor
-            zoneNumberLabel.layer.borderWidth = 1
-            annotationView.addSubview(zoneNumberLabel)
+            
+            let identifier = "pins"
+            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            annotationView.annotation = annotation
+            annotationView.canShowCallout = true
         }
         
-        return annotationView
+        return nil
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
