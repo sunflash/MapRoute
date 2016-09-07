@@ -109,6 +109,17 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    private func highlighZones(zones:Set<String>) {
+        
+        self.mapViewPolygon { polygonInfo in
+            
+            guard zones.contains(polygonInfo.zoneNumber) else {return false}
+            guard let polygonRender = self.mapView.renderer(for: polygonInfo.polygon) as? MKPolygonRenderer else {return false}
+            polygonRender.fillColor = polygonFillColor(state: .Select)
+            return false
+        }
+    }
+    
     //------------------------------------------------------------------------------------------
     // MARK: - User Action
     
