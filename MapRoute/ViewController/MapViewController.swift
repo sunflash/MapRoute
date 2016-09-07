@@ -15,7 +15,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private var zoneData = [String:FareZone]()
     private var polygons = [MKPolygon]()
-    private var zoneAnnotations = [MKPointAnnotation]()
+    private var zoneAnnotations = [ZoneAnnotation]()
     
     private var selectedZones = Set<String>()
     private var neighbourZones = Set<String>()
@@ -301,10 +301,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             return nil
         }
         
-        if self.zoneAnnotations.contains(annotation as! MKPointAnnotation) {
+        if let zoneAnnotation = annotation as? ZoneAnnotation  {
             
-            let identifier = "zoneNumber"
-            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) ?? MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: zoneAnnotation.identifier) ?? MKAnnotationView(annotation: annotation, reuseIdentifier: zoneAnnotation.identifier)
             annotationView.annotation = annotation
             annotationView.canShowCallout = false
             
@@ -343,9 +342,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let hidden = latitudeDelta > 1.0
         
         for annotation in self.mapView.annotations {
-            
-            guard let pointAnnotation = annotation as? MKPointAnnotation, self.zoneAnnotations.contains(pointAnnotation) else {return}
-            
+            guard annotation is ZoneAnnotation else {return}
             let annotationView = self.mapView.view(for: annotation)
             annotationView?.isHidden = hidden
         }

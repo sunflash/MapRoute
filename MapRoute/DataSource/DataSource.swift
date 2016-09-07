@@ -18,11 +18,15 @@ struct FareZone {
     let polygon: MKPolygon
 }
 
+class ZoneAnnotation: MKPointAnnotation {
+    let identifier = "zoneNumber"
+}
+
 class DataSource {
     
     static let sharedDataSource = DataSource()
     
-    func zoneData(completion: @escaping ([String:FareZone],[MKPolygon],[MKPointAnnotation])->Void)   {
+    func zoneData(completion: @escaping ([String:FareZone],[MKPolygon],[ZoneAnnotation])->Void)   {
         
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
         
@@ -45,7 +49,7 @@ class DataSource {
             
             var zoneData = [String:FareZone]()
             var zonePolygons = [MKPolygon]()
-            var zoneAnnotations = [MKPointAnnotation]()
+            var zoneAnnotations = [ZoneAnnotation]()
             
             for (_, zoneInfo) in zealand["features"] {
                 
@@ -59,7 +63,7 @@ class DataSource {
                 guard let centerCoordinate = centerCoordinateO, let centerLat = Double(centerCoordinate[1]), let centerLon = Double(centerCoordinate[0]) else {continue}
                 let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
                 
-                let annotation = MKPointAnnotation()
+                let annotation = ZoneAnnotation()
                 annotation.coordinate = center
                 annotation.title = zoneNumber
                 zoneAnnotations += [annotation]
