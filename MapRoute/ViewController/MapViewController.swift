@@ -91,19 +91,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // MARK: - MapView UI
     
     private enum ZonePolygonHighlightState {
-        case Select
-        case Deselect
-        case Neighbour
+        case select
+        case deselect
+        case neighbour
     }
     
     private func polygonFillColor(zoneNumber: String?) -> UIColor {
         
         if let number = zoneNumber, self.selectedZones.contains(number) {
-            return polygonFillColor(state: .Select)
+            return polygonFillColor(state: .select)
         } else if let number = zoneNumber, self.neighbourZones.contains(number) {
-            return polygonFillColor(state: .Neighbour)
+            return polygonFillColor(state: .neighbour)
         } else {
-            return polygonFillColor(state: .Deselect)
+            return polygonFillColor(state: .deselect)
         }
     }
     
@@ -111,11 +111,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
         let alpha: CGFloat = 0.7
         switch state {
-        case .Select:
+        case .select:
             return self.zonePolygonSelectedColor.withAlphaComponent(alpha)
-        case .Deselect:
+        case .deselect:
             return self.zonePolygonDeselectColor.withAlphaComponent(alpha)
-        case .Neighbour:
+        case .neighbour:
             return self.zonePolygonNeighbourZoneColor.withAlphaComponent(alpha)
         }
     }
@@ -126,7 +126,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             guard zones.contains(polygonInfo.zoneNumber) else {return false}
             guard let polygonRender = self.mapView.renderer(for: polygonInfo.polygon) as? MKPolygonRenderer else {return false}
-            polygonRender.fillColor = polygonFillColor(state: .Select)
+            polygonRender.fillColor = polygonFillColor(state: .select)
             return false
         }
     }
@@ -157,20 +157,20 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     private enum ZoneAction {
-        case Selected
-        case Deselected
-        case Invalid
+        case selected
+        case deselected
+        case invalid
     }
     
     private func tapOnZone(zoneNumber: String) -> ZoneAction {
         
-        var zoneAction = ZoneAction.Invalid
+        var zoneAction = ZoneAction.invalid
         if selectedZones.contains(zoneNumber) {
             selectedZones.remove(zoneNumber)
-            zoneAction = .Deselected
+            zoneAction = .deselected
         } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber) {
             selectedZones.insert(zoneNumber)
-            zoneAction = .Selected
+            zoneAction = .selected
         } else {
             print("Tap zone isn't neighbour zone to selected zones.")
         }
@@ -195,10 +195,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let action = self.tapOnZone(zoneNumber: zoneNumber)
             
             switch action {
-            case .Deselected:
-                polygonRender.fillColor = polygonFillColor(state: .Deselect)
-            case .Selected:
-                polygonRender.fillColor = polygonFillColor(state: .Select)
+            case .deselected:
+                polygonRender.fillColor = polygonFillColor(state: .deselect)
+            case .selected:
+                polygonRender.fillColor = polygonFillColor(state: .select)
             default:
                 break
             }
@@ -210,7 +210,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private func updateNeighbourZone(tapZoneNumber: String, action: ZoneAction) {
         
-        guard action != .Invalid else {return}
+        guard action != .invalid else {return}
         
         if let zones = self.zoneData[tapZoneNumber]?.neighbourZones {
             
@@ -239,9 +239,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             var removeZones = Set<String>()
             
             switch action {
-            case .Selected:
+            case .selected:
                 addZones = newNeighbourZones(zones)
-            case .Deselected:
+            case .deselected:
                 removeZones = removeNeighbourZones(tapZoneNumber,zones)
                 if self.neighbourZones.contains(tapZoneNumber) {
                     addZones = [tapZoneNumber]
@@ -259,11 +259,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 
                 if addZones.contains(zonePolygonInfo.zoneNumber) {
                     guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
-                    polygonRender.fillColor = self.polygonFillColor(state: .Neighbour)
+                    polygonRender.fillColor = self.polygonFillColor(state: .neighbour)
                     updateCount += 1
                 } else if removeZones.contains(zonePolygonInfo.zoneNumber) {
                     guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
-                    polygonRender.fillColor = self.polygonFillColor(state: .Deselect)
+                    polygonRender.fillColor = self.polygonFillColor(state: .deselect)
                     updateCount += 1
                 }
                 return (updateCount >= updateTotalCount)
