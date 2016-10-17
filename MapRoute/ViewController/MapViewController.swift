@@ -16,12 +16,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private var zoneData = [String:FareZone]()
     private var polygons = [MKPolygon]()
     private var zoneAnnotations = [ZoneAnnotation]()
+    private var routes = [MKPolyline]()
     
     private var selectedZones = Set<String>()
     private var neighbourZones = Set<String>()
     
     private let zoneLabelTag = 8
-    private let zoneLabelBackgroundColor = #colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1)
+    private let zoneLabelBackgroundColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
     private let zoneLabelBorderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     private let zoneLabelTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     
@@ -30,7 +31,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private let zonePolygonNeighbourZoneColor = #colorLiteral(red: 0.1764705926, green: 0.4980392158, blue: 0.7568627596, alpha: 1)
     private let zonePolygonSelectedColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
     
+    private let routeLineColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
+    
     private var tapZoneLock = false
+    var showZoneLabels = false
     
     //------------------------------------------------------------------------------------------
     // MARK: - View
@@ -75,14 +79,16 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 self.zoneAnnotations = annotations
                 
                 if self.polygons.count > 0 {
-                    self.mapView.addOverlays(self.polygons, level: MKOverlayLevel.aboveLabels)
+                    self.mapView.addOverlays(self.polygons, level: .aboveLabels)
                 }
                 
-                if self.zoneAnnotations.count > 0 {
+                if self.routes.count > 0 {
+                    self.mapView.addOverlays(self.routes, level: .aboveLabels)
+                }
+                
+                if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
                     self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
                 }
-                
-                //self.showJouney()
             }
         }
     }
@@ -146,14 +152,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     //------------------------------------------------------------------------------------------
     // MARK: - User Action
     
-    private func showJouney() {
+    func displayJourney(zones:Set<String>? = nil,locations:[LocationAnnotation]? = nil, route:[CLLocationCoordinate2D]? = nil) {
         
         self.tapZoneLock = true
         
-        let higlightZonesInfo = DataSource.highLightZonesInfo()
-        self.highlighZones(zones: higlightZonesInfo.zones)
-        self.selectedZones = higlightZonesInfo.zones
-        self.mapView.showAnnotations(higlightZonesInfo.locations, animated: false)
+        if let zones = zones {
+            self.highlighZones(zones: zones)
+            self.selectedZones = self.selectedZones.union(zones)
+        }
+        if let locations = locations {
+            self.mapView.showAnnotations(locations, animated: false)
+        }
+        if let route = route {
+            let polyline = MKPolyline(coordinates: route, count: route.count)
+            self.routes += [polyline]
+        }
     }
     
     private enum ZoneAction {
@@ -280,8 +293,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             let render = MKPolygonRenderer(polygon: polygon)
             render.strokeColor = self.zonePolygonBorderPathColor
-            render.lineWidth = 1;
+            render.lineWidth = 1
             render.fillColor = self.polygonFillColor(zoneNumber: polygon.title)
+            return render
+            
+        } else if let polyline = overlay as? MKPolyline {
+            
+            let render = MKPolylineRenderer(overlay: polyline)
+            render.lineWidth = 3
+            render.strokeColor = self.routeLineColor
             return render
         }
         return  MKOverlayRenderer(overlay: overlay)
@@ -327,6 +347,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: locationAnnotation.identifier) ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: locationAnnotation.identifier)
             annotationView.annotation = annotation
             annotationView.canShowCallout = true
+            return annotationView
         }
         
         return nil

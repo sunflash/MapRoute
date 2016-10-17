@@ -80,24 +80,6 @@ class DataSource {
             }
             
             completion(zoneData,zonePolygons,zoneAnnotations)
-       }
-    }
-    
-    class func highLightZonesInfo() -> (zones:Set<String>,locations:[LocationAnnotation])  {
-    
-        let highlightZones = Set(["1","2","32","43","54","66","76","8","96","97","28","27","140","141",
-                                    "269","262","263","275","277","26","22","20","99","89","77","67","33","44","55","260"])
-        
-        let jouneyBegin = LocationAnnotation()
-        jouneyBegin.coordinate = CLLocationCoordinate2DMake( 55.683729, 12.590080)
-        jouneyBegin.title = "København, Frederiksberg, City"
-        jouneyBegin.subtitle = "Bredgade 36, 1260 København K"
-        
-        let jouneyEnd = LocationAnnotation()
-        jouneyEnd.coordinate = CLLocationCoordinate2DMake(55.215841, 11.812547)
-        jouneyEnd.title = "Næstved"
-        jouneyEnd.subtitle = "Bystævnet 8, Rønnebæk, 4700 Næstved"
-    
-        return(highlightZones,[jouneyBegin,jouneyEnd])
+        }
     }
 }
