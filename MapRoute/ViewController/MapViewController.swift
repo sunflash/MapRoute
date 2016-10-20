@@ -22,6 +22,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private var neighbourZones = Set<String>()
     
     private let zoneLabelTag = 8
+    private let zoneLabelSize : CGFloat = 26
     private let zoneLabelBackgroundColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
     private let zoneLabelBorderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     private let zoneLabelTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
@@ -34,7 +35,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private let routeLineColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
     
     private var tapZoneLock = false
-    var showZoneLabels = false
+    
+    enum zoneLabelStyle {
+        case basic
+        case circularBorder
+    }
+    
+    var showZoneLabels = true
+    var zonesLabelsStyle = zoneLabelStyle.circularBorder
     
     //------------------------------------------------------------------------------------------
     // MARK: - View
@@ -87,7 +95,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 }
                 
                 if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
-                    self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
+                    self.mapView.addAnnotations(self.zoneAnnotations)
                 }
             }
         }
@@ -328,16 +336,20 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     return CGRect(x: point, y: point, width: size, height: size)
                 }
                 
-                let zoneNumberLabel = UILabel(frame: centerLabel(26))
+                let zoneNumberLabel = UILabel(frame: centerLabel(self.zoneLabelSize))
                 zoneNumberLabel.textAlignment = .center
                 zoneNumberLabel.textColor = self.zoneLabelTextColor
                 zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
                 zoneNumberLabel.text = annotation.title ?? ""
                 zoneNumberLabel.tag = self.zoneLabelTag
-                zoneNumberLabel.layer.backgroundColor = self.zoneLabelBackgroundColor.cgColor
-                zoneNumberLabel.layer.cornerRadius = 13
-                zoneNumberLabel.layer.borderColor = self.zoneLabelBorderColor.cgColor
-                zoneNumberLabel.layer.borderWidth = 1
+                
+                if self.zonesLabelsStyle == .circularBorder {
+                    zoneNumberLabel.layer.backgroundColor = self.zoneLabelBackgroundColor.cgColor
+                    zoneNumberLabel.layer.cornerRadius = (self.zoneLabelSize / 2)
+                    zoneNumberLabel.layer.borderColor = self.zoneLabelBorderColor.cgColor
+                    zoneNumberLabel.layer.borderWidth = 1
+                }
+                
                 annotationView.addSubview(zoneNumberLabel)
             }
             return annotationView
@@ -355,11 +367,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
+        guard self.mapView.annotations.count > 0 else {return}
+        
         let latitudeDelta = mapView.region.span.latitudeDelta
-        let hidden = latitudeDelta > 1.0
+        let hidden = latitudeDelta > 0.55
         
         for annotation in self.mapView.annotations {
-            guard annotation is ZoneAnnotation else {return}
+            guard annotation is ZoneAnnotation else {continue}
             let annotationView = self.mapView.view(for: annotation)
             annotationView?.isHidden = hidden
         }
