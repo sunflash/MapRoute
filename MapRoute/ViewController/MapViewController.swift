@@ -16,6 +16,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private var zoneData = [String:FareZone]()
     private var polygons = [MKPolygon]()
     private var zoneAnnotations = [ZoneAnnotation]()
+    private var locationAnnotations = [LocationAnnotation]()
     private var routes = [MKPolyline]()
     
     private var selectedZones = Set<String>()
@@ -90,12 +91,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     self.mapView.addOverlays(self.polygons, level: .aboveLabels)
                 }
                 
+                let showLocations = (self.locationAnnotations.count > 0)
+                
+                if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
+                    if showLocations {
+                        self.mapView.addAnnotations(self.zoneAnnotations)
+                    } else {
+                        self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
+                    }
+                }
+                
                 if self.routes.count > 0 {
                     self.mapView.addOverlays(self.routes, level: .aboveLabels)
                 }
                 
-                if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
-                    self.mapView.addAnnotations(self.zoneAnnotations)
+                if showLocations == true {
+                    self.mapView.showAnnotations(self.locationAnnotations, animated: false)
                 }
             }
         }
@@ -169,7 +180,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             self.selectedZones = self.selectedZones.union(zones)
         }
         if let locations = locations {
-            self.mapView.showAnnotations(locations, animated: false)
+            self.locationAnnotations += locations
         }
         if let route = route {
             let polyline = MKPolyline(coordinates: route, count: route.count)
