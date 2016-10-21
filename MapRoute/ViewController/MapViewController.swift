@@ -9,6 +9,10 @@
 import UIKit
 import MapKit
 
+protocol MapViewControllerDelegate: class {
+    func didSelectRoute(index: Int)
+}
+
 class MapViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak private var mapView : MKMapView!
@@ -34,6 +38,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private let zonePolygonSelectedColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
     
     private let routeLineColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
+    private let routeSelectedLineColor = #colorLiteral(red: 0.1647058824, green: 0.9921568627, blue: 0.1843137255, alpha: 1)
     
     private var tapZoneLock = false
     
@@ -44,6 +49,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     var showZoneLabels = true
     var zonesLabelsStyle = zoneLabelStyle.circularBorder
+    
+    weak var delegate: MapViewControllerDelegate?
+    
+    private(set) var selectedRouteIndex : Int?
     
     //------------------------------------------------------------------------------------------
     // MARK: - View
@@ -102,7 +111,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 }
                 
                 if self.routes.count > 0 {
-                    self.mapView.addOverlays(self.routes, level: .aboveLabels)
+                    for (index, route) in self.routes.enumerated() {
+                        route.title = String(index)
+                        self.mapView.add(route, level: .aboveLabels)
+                    }
                 }
                 
                 if showLocations == true {
@@ -156,9 +168,17 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    typealias zonePolygonInfo = (zoneNumber:String,polygon:MKPolygon)
+    private func highlightRoute(routeIndex: Int) {
+        
+        for (index,route) in self.routes.enumerated() {
+            guard let routeRender = self.mapView.renderer(for: route) as? MKPolylineRenderer else {continue}
+            routeRender.strokeColor = (index == routeIndex) ? self.routeSelectedLineColor : self.routeLineColor
+        }
+    }
     
-    func mapViewPolygon(enumerate:(zonePolygonInfo)->Bool) {
+    private typealias zonePolygonInfo = (zoneNumber:String,polygon:MKPolygon)
+    
+    private func mapViewPolygon(enumerate:(zonePolygonInfo)->Bool) {
         
         for overlay in self.mapView.overlays {
             guard let polygon = overlay as? MKPolygon, let zoneNumber = polygon.title else {continue}
@@ -188,6 +208,87 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    func selectRoute(routeIndex : Int) {
+        
+        guard routeIndex < self.routes.count else {return}
+        self.highlightRoute(routeIndex: routeIndex)
+        self.selectedRouteIndex = routeIndex
+    }
+    
+    @objc private func handleMapTap(tap: UIGestureRecognizer) {
+        
+        let tapPoint = tap.location(in: self.mapView)
+        let tapCoordinate = self.mapView.convert(tapPoint, toCoordinateFrom: self.mapView)
+        let tapMapPoint = MKMapPointForCoordinate(tapCoordinate)
+        
+        if tapZoneLock == false {
+            self.tapZone(tapMapPoint: tapMapPoint)
+        } else {
+            self.tapRoute(tapMapPoint: tapMapPoint)
+        }
+    }
+    
+    private func tapRoute(tapMapPoint : MKMapPoint) {
+        
+        guard self.routes.count > 0 else {return}
+        
+        var nearestDistance = Double(MAXFLOAT)
+        var routeIndex = -1
+        
+        for (index, route) in self.routes.enumerated() {
+            let distance = distanceToRoute(point: tapMapPoint, route: route)
+            if distance < nearestDistance  {
+                nearestDistance = distance
+                routeIndex = index
+            }
+        }
+        
+        let maxDistance : Double = 5000
+        
+        if nearestDistance <= maxDistance && routeIndex >= 0 {
+            self.highlightRoute(routeIndex: routeIndex)
+            self.selectedRouteIndex = routeIndex
+            self.delegate?.didSelectRoute(index: routeIndex)
+        }
+    }
+    
+    private func distanceToRoute(point: MKMapPoint, route: MKPolyline) -> Double {
+        
+        var distance = Double(MAXFLOAT)
+        var routePoints = [MKMapPoint]()
+        let routePointCount = route.pointCount
+        
+        for point in UnsafeBufferPointer(start: route.points(), count: routePointCount) {
+            routePoints.append(point)
+        }
+        
+        for (index, routePoint) in routePoints.enumerated() {
+            
+            guard index <= (routePointCount-2) else {break}
+            
+            let rA = routePoint
+            let rB = routePoints[index+1]
+            let xDelta = rB.x - rA.x
+            let yDelta = rB.y - rA.y
+            if (xDelta == 0.0 && yDelta == 0.0) { // Points must not be equal
+                continue
+            }
+            
+            let u: Double = ((point.x - rA.x) * xDelta + (point.y - rA.y) * yDelta) / (xDelta * xDelta + yDelta * yDelta)
+            var ptClosest = MKMapPoint()
+            
+            if (u < 0.0) {
+                ptClosest = rA
+            } else if (u > 1.0) {
+                ptClosest = rB
+            } else {
+                ptClosest = MKMapPointMake(rA.x + u * xDelta, rA.y + u * yDelta);
+            }
+            distance = min(distance, MKMetersBetweenMapPoints(ptClosest, point))
+        }
+        return distance
+    }
+    
     private enum ZoneAction {
         case selected
         case deselected
@@ -209,13 +310,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return zoneAction
     }
     
-    @objc private func handleMapTap(tap: UIGestureRecognizer) {
-        
-        guard tapZoneLock == false else {return}
-        
-        let tapPoint = tap.location(in: self.mapView)
-        let tapCoordinate = self.mapView.convert(tapPoint, toCoordinateFrom: self.mapView)
-        let tapMapPoint = MKMapPointForCoordinate(tapCoordinate)
+    private func tapZone(tapMapPoint : MKMapPoint) {
         
         self.mapViewPolygon { polygonInfo in
             
@@ -319,8 +414,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         } else if let polyline = overlay as? MKPolyline {
             
             let render = MKPolylineRenderer(overlay: polyline)
-            render.lineWidth = 3
-            render.strokeColor = self.routeLineColor
+            render.lineWidth = 2.5
+            render.strokeColor = (Int(polyline.title!) == self.selectedRouteIndex) ? self.routeSelectedLineColor : self.routeLineColor
             return render
         }
         return  MKOverlayRenderer(overlay: overlay)
@@ -388,6 +483,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let annotationView = self.mapView.view(for: annotation)
             annotationView?.isHidden = hidden
         }
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        
+    }
+    
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        
     }
 }
 
