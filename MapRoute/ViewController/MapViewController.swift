@@ -113,7 +113,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 if self.routes.count > 0 {
                     for (index, route) in self.routes.enumerated() {
                         route.title = String(index)
-                        self.mapView.add(route, level: .aboveLabels)
+                        if (index != self.selectedRouteIndex) {self.mapView.add(route, level: .aboveLabels)}
+                    }
+                    if let selectedRouteIndex = self.selectedRouteIndex { // Add selected route to top
+                        self.mapView.add(self.routes[selectedRouteIndex], level: .aboveLabels)
                     }
                 }
                 
@@ -173,6 +176,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         for (index,route) in self.routes.enumerated() {
             guard let routeRender = self.mapView.renderer(for: route) as? MKPolylineRenderer else {continue}
             routeRender.strokeColor = (index == routeIndex) ? self.routeSelectedLineColor : self.routeLineColor
+            if (index == routeIndex) {
+                let topIndex = self.mapView.overlays.count - 1
+                self.mapView.insert(route, at: topIndex)
+            }
         }
     }
     
@@ -211,8 +218,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func selectRoute(routeIndex : Int) {
         
         guard routeIndex < self.routes.count else {return}
-        self.highlightRoute(routeIndex: routeIndex)
         self.selectedRouteIndex = routeIndex
+        self.highlightRoute(routeIndex: routeIndex)
     }
     
     @objc private func handleMapTap(tap: UIGestureRecognizer) {
@@ -246,8 +253,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let maxDistance : Double = 5000
         
         if nearestDistance <= maxDistance && routeIndex >= 0 {
-            self.highlightRoute(routeIndex: routeIndex)
             self.selectedRouteIndex = routeIndex
+            self.highlightRoute(routeIndex: routeIndex)
             self.delegate?.didSelectRoute(index: routeIndex)
         }
     }
