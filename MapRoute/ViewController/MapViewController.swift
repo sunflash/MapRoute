@@ -10,7 +10,13 @@ import UIKit
 import MapKit
 
 protocol MapViewControllerDelegate: class {
-    func didSelectRoute(index: Int)
+    func shoudSelectRoute(index: Int) -> Bool
+}
+
+extension MapViewControllerDelegate { // Delegate default
+    func shoudSelectRoute(index: Int) -> Bool {
+        return true
+    }
 }
 
 class MapViewController: UIViewController, MKMapViewDelegate {
@@ -160,14 +166,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    private func highlighZones(zones:Set<String>) {
-        
-        self.mapViewPolygon { polygonInfo in
-            
-            guard zones.contains(polygonInfo.zoneNumber) else {return false}
-            guard let polygonRender = self.mapView.renderer(for: polygonInfo.polygon) as? MKPolygonRenderer else {return false}
-            polygonRender.fillColor = polygonFillColor(state: .select)
-            return false
+    private func changeZonesFillColors(zones: Set<String>, state: ZonePolygonHighlightState) {
+        for zoneNumber in zones {
+            guard let zoneInfo = self.zoneData[zoneNumber] else {continue}
+            guard let polygonRender = self.mapView.renderer(for: zoneInfo.polygon) as? MKPolygonRenderer else {return}
+            polygonRender.fillColor = self.polygonFillColor(state: state)
         }
     }
     
@@ -196,14 +199,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     //------------------------------------------------------------------------------------------
-    // MARK: - User Action
+    // MARK: - User Action (Public)
     
     func displayJourney(zones:Set<String>? = nil,locations:[LocationAnnotation]? = nil, route:[CLLocationCoordinate2D]? = nil) {
         
         self.tapZoneLock = true
         
         if let zones = zones {
-            self.highlighZones(zones: zones)
+            self.changeZonesFillColors(zones: zones, state: .select)
             self.selectedZones = self.selectedZones.union(zones)
         }
         if let locations = locations {
@@ -221,6 +224,18 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.selectedRouteIndex = routeIndex
         self.highlightRoute(routeIndex: routeIndex)
     }
+    
+    func highlightOnlyZones(zones: Set<String>) {
+        
+        let deselectZones = self.selectedZones.subtracting(zones)
+        let highlightZones = zones.subtracting(self.selectedZones)
+        self.selectedZones = zones
+        self.changeZonesFillColors(zones: deselectZones, state: .deselect)
+        self.changeZonesFillColors(zones: highlightZones, state: .select)
+    }
+    
+    //------------------------------------------------------------------------------------------
+    // MARK: - User Action (Private)
     
     @objc private func handleMapTap(tap: UIGestureRecognizer) {
         
@@ -251,11 +266,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         
         let maxDistance : Double = 5000
+        guard nearestDistance <= maxDistance && routeIndex >= 0 else {return}
         
-        if nearestDistance <= maxDistance && routeIndex >= 0 {
+        if self.delegate?.shoudSelectRoute(index: routeIndex) == true {
             self.selectedRouteIndex = routeIndex
             self.highlightRoute(routeIndex: routeIndex)
-            self.delegate?.didSelectRoute(index: routeIndex)
         }
     }
     
@@ -384,24 +399,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 break
             }
             
-            let updateTotalCount = addZones.count + removeZones.count
-            var updateCount = 0
-            
-            guard updateTotalCount != 0 else {return}
-            
-            self.mapViewPolygon { zonePolygonInfo in
-                
-                if addZones.contains(zonePolygonInfo.zoneNumber) {
-                    guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
-                    polygonRender.fillColor = self.polygonFillColor(state: .neighbour)
-                    updateCount += 1
-                } else if removeZones.contains(zonePolygonInfo.zoneNumber) {
-                    guard let polygonRender = self.mapView.renderer(for: zonePolygonInfo.polygon) as? MKPolygonRenderer else {return false};
-                    polygonRender.fillColor = self.polygonFillColor(state: .deselect)
-                    updateCount += 1
-                }
-                return (updateCount >= updateTotalCount)
-            }
+            guard (addZones.count + removeZones.count) != 0 else {return}
+            changeZonesFillColors(zones: addZones, state: .neighbour)
+            changeZonesFillColors(zones: removeZones, state: .deselect)
         }
     }
     
