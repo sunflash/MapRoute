@@ -1,5 +1,5 @@
 //
-//  DataSource.swift
+//  MapDataSource.swift
 //  MapRoute
 //
 //  Created by Min Wu on 02/09/16.
@@ -9,31 +9,14 @@
 import Foundation
 import MapKit
 
-struct FareZone {
+class MapDataSource: MapViewControllerDataSource {
     
-    let name: String
-    let zoneNumber: String
-    let neighbourZones: Set<String>
-    let centerCoordinate: CLLocationCoordinate2D
-    let polygon: MKPolygon
-}
-
-class ZoneAnnotation: MKPointAnnotation {
-    let identifier = "zoneNumber"
-}
-
-class LocationAnnotation: MKPointAnnotation {
-    let identifier = "location"
-}
-
-class DataSource {
-    
-    static let sharedDataSource = DataSource()
+    static let sharedDataSource = MapDataSource()
     
     func zoneData(completion: @escaping ([String:FareZone],[MKPolygon],[ZoneAnnotation])->Void)   {
         
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
-        
+            
             let fileURL = Bundle.main.url(forResource: "ZealandZones", withExtension: "json")
             guard let url = fileURL else {return}
             let jsonData = try? Data(contentsOf: url)

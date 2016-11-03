@@ -9,6 +9,9 @@
 import UIKit
 import MapKit
 
+//------------------------------------------------------------------------------------------
+// MARK: - MapViewControllerDelegate
+
 protocol MapViewControllerDelegate: class {
     func shoudSelectRoute(index: Int) -> Bool
 }
@@ -18,6 +21,37 @@ extension MapViewControllerDelegate { // Delegate default
         return true
     }
 }
+
+//------------------------------------------------------------------------------------------
+// MARK: - MapViewControllerDataSource
+
+protocol MapViewControllerDataSource: class {
+    
+    func zoneData(completion: @escaping ([String:FareZone],[MKPolygon],[ZoneAnnotation])->Void)
+}
+
+//------------------------------------------------------------------------------------------
+// MARK: - Map View Controller Objects
+
+struct FareZone {
+    
+    let name: String
+    let zoneNumber: String
+    let neighbourZones: Set<String>
+    let centerCoordinate: CLLocationCoordinate2D
+    let polygon: MKPolygon
+}
+
+class ZoneAnnotation: MKPointAnnotation {
+    let identifier = "zoneNumber"
+}
+
+class LocationAnnotation: MKPointAnnotation {
+    let identifier = "location"
+}
+
+//------------------------------------------------------------------------------------------
+// MARK: - MapViewController
 
 class MapViewController: UIViewController, MKMapViewDelegate {
     
@@ -53,10 +87,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         case circularBorder
     }
     
-    var showZoneLabels = true
-    var zonesLabelsStyle = zoneLabelStyle.circularBorder
+    var showZoneLabels = false
+    var zonesLabelsStyle = zoneLabelStyle.basic
     
     weak var delegate: MapViewControllerDelegate?
+    weak var dataSource: MapViewControllerDataSource?
     
     private(set) var selectedRouteIndex : Int?
     
@@ -68,18 +103,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         self.configureMapView()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     private func configureMapView() {
-    
+        
         self.addMapOverlays()
         self.mapView.showsPointsOfInterest = false
         self.mapView.isRotateEnabled = false
         self.mapView.isPitchEnabled = false
+        if #available(iOS 9.0, *) {
+            self.mapView.showsScale = false
+        }
         self.mapView.delegate = self
         
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(tap:)))
@@ -91,10 +129,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.mapView.addGestureRecognizer(singleTap)
         self.mapView.addGestureRecognizer(doubleTap)
     }
-
+    
     private func addMapOverlays() {
         
-        DataSource.sharedDataSource.zoneData { zoneData, polygons, annotations in
+        self.dataSource?.zoneData { zoneData, polygons, annotations in
             
             DispatchQueue.main.async {
                 
@@ -104,16 +142,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 
                 if self.polygons.count > 0 {
                     self.mapView.addOverlays(self.polygons, level: .aboveLabels)
-                }
-                
-                let showLocations = (self.locationAnnotations.count > 0)
-                
-                if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
-                    if showLocations {
-                        self.mapView.addAnnotations(self.zoneAnnotations)
-                    } else {
-                        self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
-                    }
                 }
                 
                 if self.routes.count > 0 {
@@ -126,7 +154,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     }
                 }
                 
-                if showLocations == true {
+                let showLocations = (self.locationAnnotations.count > 0)
+                let showSelectedZone = (self.selectedZones.count > 0)
+                
+                if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
+                    if showLocations || showSelectedZone {
+                        self.mapView.addAnnotations(self.zoneAnnotations)
+                    } else {
+                        self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
+                    }
+                }
+                
+                if showLocations == true && showSelectedZone == true {
+                    self.mapView.addAnnotations(self.locationAnnotations)
+                    self.zoomIntoSelectedZone()
+                } else if showLocations == true {
                     self.mapView.showAnnotations(self.locationAnnotations, animated: false)
                 }
             }
@@ -154,7 +196,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     private func polygonFillColor(state: ZonePolygonHighlightState) -> UIColor {
-    
+        
         let alpha: CGFloat = 0.7
         switch state {
         case .select:
@@ -198,6 +240,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    private func zoomIntoSelectedZone(animated: Bool = false) {
+        
+        guard self.polygons.count > 0 else {return}
+        
+        let mapRects = self.polygons.filter{self.selectedZones.contains($0.title ?? "")}.map{self.mapView.mapRectThatFits($0.boundingMapRect)}
+        
+        let x = mapRects.map{$0.origin.x}.min()!
+        let y = mapRects.map{$0.origin.y}.min()!
+        let width = mapRects.map{$0.origin.x+$0.size.width}.max()! - x
+        let height = mapRects.map{$0.origin.y+$0.size.height}.max()! - y
+        let zoomMapRect = MKMapRect(origin: MKMapPointMake(x, y), size: MKMapSizeMake(width,height))
+        let edgePadding = UIEdgeInsetsMake(10, 10, 10, 10)
+        
+        self.mapView.setVisibleMapRect(zoomMapRect, edgePadding: edgePadding, animated: animated)
+    }
+    
     //------------------------------------------------------------------------------------------
     // MARK: - User Action (Public)
     
@@ -232,6 +290,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.selectedZones = zones
         self.changeZonesFillColors(zones: deselectZones, state: .deselect)
         self.changeZonesFillColors(zones: highlightZones, state: .select)
+        
+        self.zoomIntoSelectedZone(animated: true)
     }
     
     //------------------------------------------------------------------------------------------
@@ -351,7 +411,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             default:
                 break
             }
-    
+            
             self.updateNeighbourZone(tapZoneNumber: zoneNumber, action: action)
             return true
         }
@@ -427,9 +487,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         return  MKOverlayRenderer(overlay: overlay)
     }
-
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
- 
+        
         if annotation is MKUserLocation {
             return nil
         }
@@ -500,4 +560,3 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
     }
 }
-

@@ -19,7 +19,7 @@
 		D3E385E31D79A49100D05996 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E385E21D79A49100D05996 /* MapKit.framework */; };
 		D3EE3B961D79A65A00B08B65 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE3B941D79A65A00B08B65 /* MapViewController.swift */; };
 		D3EE3B971D79A65A00B08B65 /* OptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE3B951D79A65A00B08B65 /* OptionsViewController.swift */; };
-		D3EE3B9A1D79A69C00B08B65 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE3B991D79A69C00B08B65 /* DataSource.swift */; };
+		D3EE3B9A1D79A69C00B08B65 /* MapDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE3B991D79A69C00B08B65 /* MapDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +58,7 @@
 		D3E385E21D79A49100D05996 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		D3EE3B941D79A65A00B08B65 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MapViewController.swift; path = ViewController/MapViewController.swift; sourceTree = "<group>"; };
 		D3EE3B951D79A65A00B08B65 /* OptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OptionsViewController.swift; path = ViewController/OptionsViewController.swift; sourceTree = "<group>"; };
-		D3EE3B991D79A69C00B08B65 /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSource.swift; path = DataSource/DataSource.swift; sourceTree = "<group>"; };
+		D3EE3B991D79A69C00B08B65 /* MapDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MapDataSource.swift; path = DataSource/MapDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,7 +195,7 @@
 		D3EE3B9B1D79A6A300B08B65 /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
-				D3EE3B991D79A69C00B08B65 /* DataSource.swift */,
+				D3EE3B991D79A69C00B08B65 /* MapDataSource.swift */,
 			);
 			name = DataSource;
 			sourceTree = "<group>";
@@ -341,7 +341,7 @@
 				D3EE3B971D79A65A00B08B65 /* OptionsViewController.swift in Sources */,
 				D39D3B391DCB4E6700121E09 /* MapContentViewController.swift in Sources */,
 				D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */,
-				D3EE3B9A1D79A69C00B08B65 /* DataSource.swift in Sources */,
+				D3EE3B9A1D79A69C00B08B65 /* MapDataSource.swift in Sources */,
 				D39C72801D79BBDA00E3F43E /* SwiftyJSON.swift in Sources */,
 				D3EE3B961D79A65A00B08B65 /* MapViewController.swift in Sources */,
 			);
