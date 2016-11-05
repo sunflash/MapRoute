@@ -381,6 +381,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         var zoneAction = ZoneAction.invalid
         if selectedZones.contains(zoneNumber) {
+            guard (self.isSelectedZonesConnectedAfterRemoval(removalZone: zoneNumber) == true) else {return .invalid}
             selectedZones.remove(zoneNumber)
             zoneAction = .deselected
         } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber) {
@@ -452,7 +453,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 addZones = newNeighbourZones(zones)
             case .deselected:
                 removeZones = removeNeighbourZones(tapZoneNumber,zones)
-                if self.neighbourZones.contains(tapZoneNumber) {
+                if self.neighbourZones.contains(tapZoneNumber) && self.neighbourZones.count > 1 {
                     addZones = [tapZoneNumber]
                 }
             default:
@@ -463,6 +464,27 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             changeZonesFillColors(zones: addZones, state: .neighbour)
             changeZonesFillColors(zones: removeZones, state: .deselect)
         }
+    }
+    
+    private func isSelectedZonesConnectedAfterRemoval(removalZone: String) -> Bool {
+        
+        var selectedZonesAfterRemoval = Set(self.selectedZones)
+        selectedZonesAfterRemoval.remove(removalZone)
+        guard selectedZonesAfterRemoval.count > 1 else {return true}
+        
+        var connectedZones = Set<String>()
+        
+        func findConnectedZones(zoneNumber: String) {
+            var nearbySelectedZones = self.zoneData[zoneNumber]?.neighbourZones.intersection(selectedZonesAfterRemoval) ?? Set<String>()
+            nearbySelectedZones.subtract(connectedZones)
+            connectedZones = connectedZones.union(nearbySelectedZones)
+            _ = nearbySelectedZones.map{findConnectedZones(zoneNumber: $0)}
+        }
+        
+        guard let randomSelectedZone = selectedZonesAfterRemoval.first else {return false}
+        findConnectedZones(zoneNumber: randomSelectedZone)
+        
+        return (connectedZones.count == selectedZonesAfterRemoval.count)
     }
     
     //------------------------------------------------------------------------------------------
