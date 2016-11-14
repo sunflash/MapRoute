@@ -94,6 +94,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     weak var dataSource: MapViewControllerDataSource?
     
     private(set) var selectedRouteIndex : Int?
+    private(set) var higlightRouteIndices = Set<Int>()
     
     //------------------------------------------------------------------------------------------
     // MARK: - View
@@ -283,7 +284,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.highlightRoute(routeIndex: routeIndex)
     }
     
-    func highlightOnlyZones(zones: Set<String>) {
+    func highlightOnlyZones(zones: Set<String>, animated: Bool) {
         
         let deselectZones = self.selectedZones.subtracting(zones)
         let highlightZones = zones.subtracting(self.selectedZones)
@@ -291,7 +292,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.changeZonesFillColors(zones: deselectZones, state: .deselect)
         self.changeZonesFillColors(zones: highlightZones, state: .select)
         
-        self.zoomIntoSelectedZone(animated: true)
+        self.zoomIntoSelectedZone(animated: animated)
+    }
+    
+    func highlightOnlyRoutes(routes: [[CLLocationCoordinate2D]]?) {
+        
+        self.mapView.removeOverlays(self.routes)
+        self.routes.removeAll()
+        self.higlightRouteIndices.removeAll()
+        
+        guard let routes = routes, routes.count > 0 else {return}
+        let polylines = routes.map{ MKPolyline(coordinates: $0, count:$0.count)}
+        self.routes += polylines
+        let highlightRoutes = Set(0...(self.routes.count-1))
+        self.higlightRouteIndices = self.higlightRouteIndices.union(highlightRoutes)
+        self.mapView.addOverlays(polylines)
     }
     
     //------------------------------------------------------------------------------------------
@@ -504,7 +519,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             let render = MKPolylineRenderer(overlay: polyline)
             render.lineWidth = 2.5
-            render.strokeColor = (Int(polyline.title!) == self.selectedRouteIndex) ? self.routeSelectedLineColor : self.routeLineColor
+            
+            if let title = polyline.title, let routeIndex = Int(title) {
+                let isSelectedRoute = (routeIndex == self.selectedRouteIndex)
+                let isHighlightedRoute =  (self.higlightRouteIndices.contains(routeIndex))
+                render.strokeColor = (isSelectedRoute == true || isHighlightedRoute == true) ? self.routeSelectedLineColor : self.routeLineColor
+            }
             return render
         }
         return  MKOverlayRenderer(overlay: overlay)
