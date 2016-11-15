@@ -313,10 +313,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         guard let routes = routes, routes.count > 0 else {return}
         let polylines = routes.map{ MKPolyline(coordinates: $0, count:$0.count)}
+        _ = polylines.enumerated().map{$1.title = String($0)}
         self.routes += polylines
         let highlightRoutes = Set(0...(self.routes.count-1))
         self.higlightRouteIndices = self.higlightRouteIndices.union(highlightRoutes)
-        self.mapView.addOverlays(polylines)
+        self.mapView.addOverlays(polylines, level: .aboveLabels)
     }
     
     func showNeighbourZone(hidden: Bool = false) {
