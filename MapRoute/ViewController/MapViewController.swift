@@ -14,12 +14,14 @@ import MapKit
 
 protocol MapViewControllerDelegate: class {
     func shoudSelectRoute(index: Int) -> Bool
+    func selectedZones(zones: Set<String>)
 }
 
 extension MapViewControllerDelegate { // Delegate default
     func shoudSelectRoute(index: Int) -> Bool {
         return true
     }
+    func selectedZones(zones: Set<String>) {} //Optional
 }
 
 //------------------------------------------------------------------------------------------
@@ -80,7 +82,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private let routeLineColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
     private let routeSelectedLineColor = #colorLiteral(red: 0.1647058824, green: 0.9921568627, blue: 0.1843137255, alpha: 1)
     
-    private var tapZoneLock = false
+    var tapZoneLock = false
     
     enum zoneLabelStyle {
         case basic
@@ -171,6 +173,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     self.zoomIntoSelectedZone()
                 } else if showLocations == true {
                     self.mapView.showAnnotations(self.locationAnnotations, animated: false)
+                } else if showSelectedZone == true {
+                    self.zoomIntoSelectedZone()
+                }
+                
+                if self.tapZoneLock == false {
+                    self.showNeighbourZone()
                 }
             }
         }
@@ -309,6 +317,16 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.mapView.addOverlays(polylines)
     }
     
+    func showNeighbourZone(hidden: Bool = false) {
+        
+        guard self.selectedZones.count > 0 else {return}
+        var neighbourZone = Set(self.selectedZones.flatMap{self.zoneData[$0]?.neighbourZones}.flatMap{$0})
+        self.neighbourZones = neighbourZone
+        neighbourZone.subtract(self.selectedZones)
+        let highlightState: ZonePolygonHighlightState = (hidden == false) ? .neighbour : .deselect
+        self.changeZonesFillColors(zones: neighbourZone, state: highlightState)
+    }
+    
     //------------------------------------------------------------------------------------------
     // MARK: - User Action (Private)
     
@@ -426,6 +444,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 polygonRender.fillColor = polygonFillColor(state: .select)
             default:
                 break
+            }
+            
+            if action != .invalid {
+                self.delegate?.selectedZones(zones: self.selectedZones)
             }
             
             self.updateNeighbourZone(tapZoneNumber: zoneNumber, action: action)
