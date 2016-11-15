@@ -97,6 +97,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private(set) var selectedRouteIndex : Int?
     private(set) var higlightRouteIndices = Set<Int>()
+    private(set) var defaultRegion: MKCoordinateRegion?
     
     //------------------------------------------------------------------------------------------
     // MARK: - View
@@ -159,9 +160,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 
                 let showLocations = (self.locationAnnotations.count > 0)
                 let showSelectedZone = (self.selectedZones.count > 0)
+                let showRegion = (self.defaultRegion != nil)
                 
                 if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
-                    if showLocations || showSelectedZone {
+                    if showLocations || showSelectedZone || showRegion {
                         self.mapView.addAnnotations(self.zoneAnnotations)
                     } else {
                         self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
@@ -325,6 +327,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         neighbourZone.subtract(self.selectedZones)
         let highlightState: ZonePolygonHighlightState = (hidden == false) ? .neighbour : .deselect
         self.changeZonesFillColors(zones: neighbourZone, state: highlightState)
+    }
+    
+    func zoomIntoRegion(location: CLLocationCoordinate2D, span: MKCoordinateSpan, animated: Bool = true) {
+        let region = MKCoordinateRegionMake(location, span)
+        self.mapView.setRegion(region, animated: true)
+        self.defaultRegion = region
     }
     
     //------------------------------------------------------------------------------------------
