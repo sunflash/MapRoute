@@ -15,13 +15,17 @@ import MapKit
 protocol MapViewControllerDelegate: class {
     func shoudSelectRoute(index: Int) -> Bool
     func selectedZones(zones: Set<String>)
+    func selectedZoneIsNotConnected()
+    func exceedMaxSelectedZoneLimit()
 }
 
 extension MapViewControllerDelegate { // Delegate default
     func shoudSelectRoute(index: Int) -> Bool {
         return true
     }
-    func selectedZones(zones: Set<String>) {} //Optional
+    func selectedZones(zones: Set<String>) {} // Optional
+    func selectedZoneIsNotConnected() {} // Optional
+    func exceedMaxSelectedZoneLimit() {} // Optional
 }
 
 //------------------------------------------------------------------------------------------
@@ -57,7 +61,7 @@ class LocationAnnotation: MKPointAnnotation {
 
 class MapViewController: UIViewController, MKMapViewDelegate {
     
-    @IBOutlet weak private var mapView : MKMapView!
+    @IBOutlet weak private(set) var mapView : MKMapView!
     
     private var zoneData = [String:FareZone]()
     private var polygons = [MKPolygon]()
@@ -82,7 +86,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private let routeLineColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
     private let routeSelectedLineColor = #colorLiteral(red: 0.1647058824, green: 0.9921568627, blue: 0.1843137255, alpha: 1)
     
+    private let boundingRegionColor = #colorLiteral(red: 0.9764705896, green: 0.850980401, blue: 0.5490196347, alpha: 1)
+    
     var tapZoneLock = false
+    var maxSelectedZoneLimit: Int?
+    var areaBoundingRegion: MKCoordinateRegion?
+    
+    var showBoundingRegion = false
     
     enum zoneLabelStyle {
         case basic
@@ -98,6 +108,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private(set) var selectedRouteIndex : Int?
     private(set) var higlightRouteIndices = Set<Int>()
     private(set) var defaultRegion: MKCoordinateRegion?
+    private(set) var isNeighbourZoneHidden = false
     
     //------------------------------------------------------------------------------------------
     // MARK: - View
@@ -160,7 +171,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 
                 let showLocations = (self.locationAnnotations.count > 0)
                 let showSelectedZone = (self.selectedZones.count > 0)
-                let showRegion = (self.defaultRegion != nil)
+                let showRegion = (self.defaultRegion != nil || self.areaBoundingRegion != nil)
                 
                 if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
                     if showLocations || showSelectedZone || showRegion {
@@ -323,17 +334,20 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func showNeighbourZone(hidden: Bool = false) {
         
         guard self.selectedZones.count > 0 else {return}
+        if (hidden == false &&  self.isSelectedZonesReachMaxLimit() == true) {return}
         var neighbourZone = Set(self.selectedZones.flatMap{self.zoneData[$0]?.neighbourZones}.flatMap{$0})
         self.neighbourZones = neighbourZone
         neighbourZone.subtract(self.selectedZones)
         let highlightState: ZonePolygonHighlightState = (hidden == false) ? .neighbour : .deselect
         self.changeZonesFillColors(zones: neighbourZone, state: highlightState)
+        self.isNeighbourZoneHidden = hidden
     }
     
-    func zoomIntoRegion(location: CLLocationCoordinate2D, span: MKCoordinateSpan, animated: Bool = true) {
+    func zoomIntoRegion(location: CLLocationCoordinate2D, span: MKCoordinateSpan, animated: Bool = true) -> MKCoordinateRegion {
         let region = MKCoordinateRegionMake(location, span)
-        self.mapView.setRegion(region, animated: true)
+        self.mapView.setRegion(region, animated: animated)
         self.defaultRegion = region
+        return region
     }
     
     //------------------------------------------------------------------------------------------
@@ -417,6 +431,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         case selected
         case deselected
         case invalid
+        case reachMaxLimit
     }
     
     private func tapOnZone(zoneNumber: String) -> ZoneAction {
@@ -426,11 +441,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             guard (self.isSelectedZonesConnectedAfterRemoval(removalZone: zoneNumber) == true) else {return .invalid}
             selectedZones.remove(zoneNumber)
             zoneAction = .deselected
-        } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber) {
+        } else if self.isSelectedZonesReachMaxLimit() == true {
+            return .reachMaxLimit
+        } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber){
             selectedZones.insert(zoneNumber)
             zoneAction = .selected
-        } else {
-            print("Tap zone isn't neighbour zone to selected zones.")
         }
         return zoneAction
     }
@@ -451,8 +466,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 polygonRender.fillColor = polygonFillColor(state: .deselect)
             case .selected:
                 polygonRender.fillColor = polygonFillColor(state: .select)
-            default:
-                break
+            case .invalid:
+                self.delegate?.selectedZoneIsNotConnected()
+            case .reachMaxLimit:
+                self.delegate?.exceedMaxSelectedZoneLimit()
             }
             
             if action != .invalid {
@@ -467,6 +484,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private func updateNeighbourZone(tapZoneNumber: String, action: ZoneAction) {
         
         guard action != .invalid else {return}
+        
+        if self.isSelectedZonesReachMaxLimit() == true {
+            self.showNeighbourZone(hidden: true)
+            return
+        } else if self.isNeighbourZoneHidden == true {
+            self.showNeighbourZone()
+        }
         
         if let zones = self.zoneData[tapZoneNumber]?.neighbourZones {
             
@@ -533,8 +557,86 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return (connectedZones.count == selectedZonesAfterRemoval.count)
     }
     
+    private func isSelectedZonesReachMaxLimit() -> Bool {
+        guard let maxLimit = maxSelectedZoneLimit else {return false}
+        return (selectedZones.count >= maxLimit)
+    }
+    
+    //------------------------------------------------------------------------------------------
+    // MARK: - Map Help Function
+    
+    class func convertMapRegionToMapRect(region: MKCoordinateRegion) -> MKMapRect {
+        
+        let centerLat = region.center.latitude
+        let centerLon = region.center.longitude
+        let deltaLat = region.span.latitudeDelta
+        let deltaLon = region.span.longitudeDelta
+        
+        let pointALat = centerLat + deltaLat/2
+        let pointALon = centerLon - deltaLon/2
+        let a = MKMapPointForCoordinate(CLLocationCoordinate2D(latitude: pointALat, longitude: pointALon))
+        
+        let pointBLat = centerLat - deltaLat/2
+        let pointBLon = centerLon + deltaLon/2
+        let b = MKMapPointForCoordinate(CLLocationCoordinate2D(latitude: pointBLat, longitude: pointBLon))
+        
+        return MKMapRectMake(min(a.x, b.x), min(a.y, b.y), abs(a.x-b.x), abs(a.y-b.y))
+    }
+    
+    class func isCoordinateInsideRegion(coordinate: CLLocationCoordinate2D, region: MKCoordinateRegion) -> Bool {
+        
+        let mapPoint = MKMapPointForCoordinate(coordinate)
+        let mapRect = MapViewController.convertMapRegionToMapRect(region: region)
+        return (MKMapRectContainsPoint(mapRect, mapPoint))
+    }
+    
+    //------------------------------------------------------------------------------------------
+    // MARK: - MapView Function
+    
+    private var areaOverlay: MKOverlay?
+    private var isAdjustingMapRectInProgress = false
+    
+    private func limitedVisibleAreaToBoundingRegion() {
+        
+        if self.areaOverlay == nil, let region = self.areaBoundingRegion  {
+            let mapRect = MapViewController.convertMapRegionToMapRect(region: region)
+            let circle = MKCircle(mapRect: mapRect)
+            self.areaOverlay = circle
+            if showBoundingRegion == true {
+                self.mapView.insert(circle, at: 0, level: .aboveLabels)
+            }
+        }
+        
+        guard let area = self.areaOverlay else {return}
+        let isInsideAreaBoundingMapRect = MKMapRectContainsRect(self.mapView.visibleMapRect, area.boundingMapRect)
+        
+        if isInsideAreaBoundingMapRect == true {
+            
+            // Is entirely inside the map view but adjust if user is zoomed out too much...
+            let widthRatio = area.boundingMapRect.size.width / self.mapView.visibleMapRect.size.width
+            let heightRatio = area.boundingMapRect.size.height / self.mapView.visibleMapRect.size.height
+            
+            let ratio = 0.8
+            if (widthRatio < ratio) || (heightRatio < ratio) {
+                self.isAdjustingMapRectInProgress = true
+                self.mapView.setVisibleMapRect(area.boundingMapRect, animated: true)
+                self.isAdjustingMapRectInProgress = false
+            }
+            
+        } else if area.intersects!(self.mapView.visibleMapRect) == false {
+            
+            // Is no longer visible in the map view.
+            // Reset to bounding map rect
+            self.isAdjustingMapRectInProgress = true
+            self.mapView.setVisibleMapRect(area.boundingMapRect, animated: true)
+            self.isAdjustingMapRectInProgress = false
+        }
+    }
+    
     //------------------------------------------------------------------------------------------
     // MARK: - MapView Delegate
+    
+    private let hiddenZoneAnnotationDelta = 0.55
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         
@@ -557,6 +659,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 render.strokeColor = (isSelectedRoute == true || isHighlightedRoute == true) ? self.routeSelectedLineColor : self.routeLineColor
             }
             return render
+        } else if let circle = overlay as? MKCircle {
+            let render = MKCircleRenderer(circle: circle)
+            render.fillColor = self.boundingRegionColor
+            return render
         }
         return  MKOverlayRenderer(overlay: overlay)
     }
@@ -572,6 +678,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: zoneAnnotation.identifier) ?? MKAnnotationView(annotation: annotation, reuseIdentifier: zoneAnnotation.identifier)
             annotationView.annotation = annotation
             annotationView.canShowCallout = false
+            annotationView.isHidden = (mapView.region.span.latitudeDelta > self.hiddenZoneAnnotationDelta)
             
             if let zoneNumberLabel = annotationView.viewWithTag(self.zoneLabelTag) as? UILabel {
                 zoneNumberLabel.text = annotation.title ?? ""
@@ -613,15 +720,20 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
-        guard self.mapView.annotations.count > 0 else {return}
+        if self.mapView.annotations.count > 0 {
+            let latitudeDelta = mapView.region.span.latitudeDelta
+            let hidden = latitudeDelta > self.hiddenZoneAnnotationDelta
+            
+            for annotation in self.mapView.annotations {
+                guard annotation is ZoneAnnotation else {continue}
+                let annotationView = self.mapView.view(for: annotation)
+                annotationView?.isHidden = hidden
+            }
+        }
         
-        let latitudeDelta = mapView.region.span.latitudeDelta
-        let hidden = latitudeDelta > 0.55
-        
-        for annotation in self.mapView.annotations {
-            guard annotation is ZoneAnnotation else {continue}
-            let annotationView = self.mapView.view(for: annotation)
-            annotationView?.isHidden = hidden
+        if self.areaBoundingRegion != nil {
+            guard self.isAdjustingMapRectInProgress == false else {return}
+            self.limitedVisibleAreaToBoundingRegion()
         }
     }
     
