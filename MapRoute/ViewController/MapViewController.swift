@@ -268,11 +268,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         let mapRects = self.polygons.filter{self.selectedZones.contains($0.title ?? "")}.map{self.mapView.mapRectThatFits($0.boundingMapRect)}
         
-        let x = mapRects.map{$0.origin.x}.min()!
-        let y = mapRects.map{$0.origin.y}.min()!
-        let width = mapRects.map{$0.origin.x+$0.size.width}.max()! - x
-        let height = mapRects.map{$0.origin.y+$0.size.height}.max()! - y
-        let zoomMapRect = MKMapRect(origin: MKMapPointMake(x, y), size: MKMapSizeMake(width,height))
+        let minX = mapRects.map{$0.origin.x}.min()
+        let minY = mapRects.map{$0.origin.y}.min()
+        let maxX = mapRects.map{$0.origin.x+$0.size.width}.max()
+        let maxY = mapRects.map{$0.origin.y+$0.size.height}.max()
+        guard let pX = minX, let pY = minY else {return}
+        guard let mX = maxX, let mY = maxY else {return}
+        let width = mX - pX
+        let height = mY - pY
+        let zoomMapRect = MKMapRect(origin: MKMapPointMake(pX, pY), size: MKMapSizeMake(width,height))
         let edgePadding = UIEdgeInsetsMake(10, 10, 10, 10)
         
         self.mapView.setVisibleMapRect(zoomMapRect, edgePadding: edgePadding, animated: animated)
@@ -334,7 +338,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func showNeighbourZone(hidden: Bool = false) {
         
         guard self.selectedZones.count > 0 else {return}
-        if (hidden == false &&  self.isSelectedZonesReachMaxLimit() == true) {return}
+        if (hidden == false &&  self.isSelectedZonesReachMaxLimit() == true) {
+            self.isNeighbourZoneHidden = true
+            return
+        }
         var neighbourZone = Set(self.selectedZones.flatMap{self.zoneData[$0]?.neighbourZones}.flatMap{$0})
         self.neighbourZones = neighbourZone
         neighbourZone.subtract(self.selectedZones)
@@ -477,6 +484,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             }
             
             self.updateNeighbourZone(tapZoneNumber: zoneNumber, action: action)
+            
             return true
         }
     }
