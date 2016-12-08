@@ -62,6 +62,10 @@ class MapDataSource: MapViewControllerDataSource {
                 zoneData[zoneNumber] = zone
             }
             
+//            zoneData.flatMap{$0.value}.sorted{$0.0.zoneNumber.localizedStandardCompare($0.1.zoneNumber) == .orderedAscending}.forEach{ zone in
+//                print("\(zone.zoneNumber) \(zone.name)")
+//            }
+        
             completion(zoneData,zonePolygons,zoneAnnotations)
         }
     }
