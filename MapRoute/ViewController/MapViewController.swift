@@ -642,6 +642,51 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     //------------------------------------------------------------------------------------------
+    // MARK: - Configure annotation
+    
+    private func configureZoneNumberAnnotation(mapView: MKMapView, zoneAnnotation: ZoneAnnotation) -> MKAnnotationView {
+        
+        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: zoneAnnotation.identifier) ?? MKAnnotationView(annotation: zoneAnnotation, reuseIdentifier: zoneAnnotation.identifier)
+        annotationView.annotation = zoneAnnotation
+        annotationView.isHidden = (mapView.region.span.latitudeDelta > self.hiddenZoneAnnotationDelta)
+        
+        if let zoneNumberLabel = annotationView.viewWithTag(self.zoneLabelTag) as? UILabel {
+            zoneNumberLabel.text = zoneAnnotation.title ?? ""
+        } else {
+            
+            let centerLabel:(CGFloat)->CGRect = { size in
+                let point = -size/2
+                return CGRect(x: point, y: point, width: size, height: size)
+            }
+            
+            let zoneNumberLabel = UILabel(frame: centerLabel(self.zoneLabelSize))
+            zoneNumberLabel.textAlignment = .center
+            zoneNumberLabel.textColor = self.zoneLabelTextColor
+            zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
+            zoneNumberLabel.text = zoneAnnotation.title ?? ""
+            zoneNumberLabel.tag = self.zoneLabelTag
+            
+            if self.zonesLabelsStyle == .circularBorder {
+                zoneNumberLabel.layer.backgroundColor = self.zoneLabelBackgroundColor.cgColor
+                zoneNumberLabel.layer.cornerRadius = (self.zoneLabelSize / 2)
+                zoneNumberLabel.layer.borderColor = self.zoneLabelBorderColor.cgColor
+                zoneNumberLabel.layer.borderWidth = 1
+            }
+            
+            annotationView.addSubview(zoneNumberLabel)
+        }
+        return annotationView
+    }
+    
+    private func configureLocationAnnotation(mapView: MKMapView, locationAnnotation: LocationAnnotation) -> MKAnnotationView {
+        
+        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: locationAnnotation.identifier) ?? MKPinAnnotationView(annotation: locationAnnotation, reuseIdentifier: locationAnnotation.identifier)
+        annotationView.annotation = locationAnnotation
+        annotationView.canShowCallout = true
+        return annotationView
+    }
+    
+    //------------------------------------------------------------------------------------------
     // MARK: - MapView Delegate
     
     private let hiddenZoneAnnotationDelta = 0.55
@@ -682,47 +727,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         
         if let zoneAnnotation = annotation as? ZoneAnnotation  {
-            
-            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: zoneAnnotation.identifier) ?? MKAnnotationView(annotation: annotation, reuseIdentifier: zoneAnnotation.identifier)
-            annotationView.annotation = annotation
-            annotationView.canShowCallout = false
-            annotationView.isHidden = (mapView.region.span.latitudeDelta > self.hiddenZoneAnnotationDelta)
-            
-            if let zoneNumberLabel = annotationView.viewWithTag(self.zoneLabelTag) as? UILabel {
-                zoneNumberLabel.text = annotation.title ?? ""
-            } else {
-                
-                let centerLabel:(CGFloat)->CGRect = { size in
-                    let point = -size/2
-                    return CGRect(x: point, y: point, width: size, height: size)
-                }
-                
-                let zoneNumberLabel = UILabel(frame: centerLabel(self.zoneLabelSize))
-                zoneNumberLabel.textAlignment = .center
-                zoneNumberLabel.textColor = self.zoneLabelTextColor
-                zoneNumberLabel.font = UIFont.boldSystemFont(ofSize: 10)
-                zoneNumberLabel.text = annotation.title ?? ""
-                zoneNumberLabel.tag = self.zoneLabelTag
-                
-                if self.zonesLabelsStyle == .circularBorder {
-                    zoneNumberLabel.layer.backgroundColor = self.zoneLabelBackgroundColor.cgColor
-                    zoneNumberLabel.layer.cornerRadius = (self.zoneLabelSize / 2)
-                    zoneNumberLabel.layer.borderColor = self.zoneLabelBorderColor.cgColor
-                    zoneNumberLabel.layer.borderWidth = 1
-                }
-                
-                annotationView.addSubview(zoneNumberLabel)
-            }
-            return annotationView
-            
+            return self.configureZoneNumberAnnotation(mapView: mapView, zoneAnnotation: zoneAnnotation)
         } else if let locationAnnotation = annotation as? LocationAnnotation {
-            
-            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: locationAnnotation.identifier) ?? MKPinAnnotationView(annotation: annotation, reuseIdentifier: locationAnnotation.identifier)
-            annotationView.annotation = annotation
-            annotationView.canShowCallout = true
-            return annotationView
+            return self.configureLocationAnnotation(mapView: mapView, locationAnnotation: locationAnnotation)
         }
-        
         return nil
     }
     
