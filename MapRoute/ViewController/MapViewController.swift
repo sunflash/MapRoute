@@ -54,6 +54,7 @@ class ZoneAnnotation: MKPointAnnotation {
 
 class LocationAnnotation: MKPointAnnotation {
     let identifier = "location"
+    var imageName: String?
 }
 
 //------------------------------------------------------------------------------------------
@@ -680,9 +681,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private func configureLocationAnnotation(mapView: MKMapView, locationAnnotation: LocationAnnotation) -> MKAnnotationView {
         
-        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: locationAnnotation.identifier) ?? MKPinAnnotationView(annotation: locationAnnotation, reuseIdentifier: locationAnnotation.identifier)
+        let newAnnotationView: () -> MKAnnotationView = {
+            if locationAnnotation.imageName != nil {
+                return MKAnnotationView(annotation: locationAnnotation, reuseIdentifier: locationAnnotation.identifier)
+            } else {
+                return MKPinAnnotationView(annotation: locationAnnotation, reuseIdentifier: locationAnnotation.identifier)
+            }
+        }
+        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: locationAnnotation.identifier) ?? newAnnotationView()
         annotationView.annotation = locationAnnotation
         annotationView.canShowCallout = true
+        if let imageName = locationAnnotation.imageName {
+            let image = UIImage(named: imageName)
+            annotationView.image = image
+            let y = (image?.size.height ?? 0) / 2
+            annotationView.centerOffset = CGPoint(x: 0, y: -y)
+        }
         return annotationView
     }
     
