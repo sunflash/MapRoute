@@ -55,6 +55,8 @@ class ZoneAnnotation: MKPointAnnotation {
 class LocationAnnotation: MKPointAnnotation {
     let identifier = "location"
     var imageName: String?
+    var showCalloutDelay: Double?
+    var showCalloutDuration: Double?
 }
 
 //------------------------------------------------------------------------------------------
@@ -697,7 +699,33 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let y = (image?.size.height ?? 0) / 2
             annotationView.centerOffset = CGPoint(x: 0, y: -y)
         }
+        self.autoShowAnnotationCallout(mapView: mapView, locationAnnotation: locationAnnotation)
         return annotationView
+    }
+    
+    private func autoShowAnnotationCallout(mapView: MKMapView, locationAnnotation: LocationAnnotation) {
+        
+        guard let calloutDelay = locationAnnotation.showCalloutDelay, let calloutDuration = locationAnnotation.showCalloutDuration else {return}
+        
+        let showCalloutTime: DispatchTime = .now() + DispatchTimeInterval.milliseconds(Int(calloutDelay*1000)) + 0.1
+        let hideCalloutTime  = showCalloutTime + DispatchTimeInterval.milliseconds(Int(calloutDuration*1000))
+        
+        let showCallout: (DispatchTime) -> Void = { time in
+            DispatchQueue.main.asyncAfter(deadline: time) {
+                mapView.selectAnnotation(locationAnnotation, animated: true)
+            }
+        }
+        
+        let hideCallout: (DispatchTime) -> Void = { time in
+            let selectedAnnotation = mapView.selectedAnnotations.first as? LocationAnnotation
+            if selectedAnnotation != locationAnnotation {
+                DispatchQueue.main.asyncAfter(deadline: time) {
+                    mapView.deselectAnnotation(locationAnnotation, animated: true)
+                }
+            }
+        }
+        showCallout(showCalloutTime)
+        hideCallout(hideCalloutTime)
     }
     
     //------------------------------------------------------------------------------------------
