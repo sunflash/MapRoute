@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D3916B4C1E15D1D3007237E2 /* MapDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3916B4B1E15D1D3007237E2 /* MapDataModel.swift */; };
+		D3916B4D1E15E65B007237E2 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3916B461E15D171007237E2 /* Realm.framework */; };
+		D3916B4E1E15E65B007237E2 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D3916B461E15D171007237E2 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D3916B501E15E660007237E2 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3916B471E15D171007237E2 /* RealmSwift.framework */; };
+		D3916B511E15E660007237E2 /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D3916B471E15D171007237E2 /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D3916B531E15EB49007237E2 /* ZoneInfos.realm in Resources */ = {isa = PBXBuildFile; fileRef = D3916B521E15EB49007237E2 /* ZoneInfos.realm */; };
 		D39C727E1D79B85900E3F43E /* ZealandZones.json in Resources */ = {isa = PBXBuildFile; fileRef = D39C727D1D79B85900E3F43E /* ZealandZones.json */; };
 		D39C72801D79BBDA00E3F43E /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C727F1D79BBDA00E3F43E /* SwiftyJSON.swift */; };
 		D39D3B391DCB4E6700121E09 /* MapContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39D3B381DCB4E6700121E09 /* MapContentViewController.swift */; };
@@ -39,7 +45,26 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		D3916B4F1E15E65B007237E2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D3916B511E15E660007237E2 /* RealmSwift.framework in Embed Frameworks */,
+				D3916B4E1E15E65B007237E2 /* Realm.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		D3916B461E15D171007237E2 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Framework/Realm/Realm.framework; sourceTree = "<group>"; };
+		D3916B471E15D171007237E2 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Framework/Realm/RealmSwift.framework; sourceTree = "<group>"; };
+		D3916B4B1E15D1D3007237E2 /* MapDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MapDataModel.swift; path = DataSource/MapDataModel.swift; sourceTree = "<group>"; };
+		D3916B521E15EB49007237E2 /* ZoneInfos.realm */ = {isa = PBXFileReference; lastKnownFileType = file; name = ZoneInfos.realm; path = Resource/ZoneInfos.realm; sourceTree = "<group>"; };
 		D39C727D1D79B85900E3F43E /* ZealandZones.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = ZealandZones.json; path = Resource/ZealandZones.json; sourceTree = "<group>"; };
 		D39C727F1D79BBDA00E3F43E /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = ThirdParty/SwiftyJSON/SwiftyJSON.swift; sourceTree = "<group>"; };
 		D39D3B381DCB4E6700121E09 /* MapContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MapContentViewController.swift; path = ViewController/MapContentViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +91,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3916B4D1E15E65B007237E2 /* Realm.framework in Frameworks */,
+				D3916B501E15E660007237E2 /* RealmSwift.framework in Frameworks */,
 				D3E385E31D79A49100D05996 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -87,9 +114,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D3916B4A1E15D17F007237E2 /* Realm */ = {
+			isa = PBXGroup;
+			children = (
+				D3916B461E15D171007237E2 /* Realm.framework */,
+				D3916B471E15D171007237E2 /* RealmSwift.framework */,
+			);
+			name = Realm;
+			sourceTree = "<group>";
+		};
 		D39C72811D79BBE500E3F43E /* ThirdParty */ = {
 			isa = PBXGroup;
 			children = (
+				D3916B4A1E15D17F007237E2 /* Realm */,
 				D39C72821D79BBF000E3F43E /* SwiftyJSON */,
 			);
 			name = ThirdParty;
@@ -115,6 +152,7 @@
 		D3B3A2AC1D79B6D2008FD3F8 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				D3916B521E15EB49007237E2 /* ZoneInfos.realm */,
 				D39C727D1D79B85900E3F43E /* ZealandZones.json */,
 				D3E385B71D79A14800D05996 /* Assets.xcassets */,
 				D3E385BC1D79A14800D05996 /* Info.plist */,
@@ -195,6 +233,7 @@
 		D3EE3B9B1D79A6A300B08B65 /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
+				D3916B4B1E15D1D3007237E2 /* MapDataModel.swift */,
 				D3EE3B991D79A69C00B08B65 /* MapDataSource.swift */,
 			);
 			name = DataSource;
@@ -210,6 +249,7 @@
 				D3E385A71D79A14800D05996 /* Sources */,
 				D3E385A81D79A14800D05996 /* Frameworks */,
 				D3E385A91D79A14800D05996 /* Resources */,
+				D3916B4F1E15E65B007237E2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -314,6 +354,7 @@
 				D3E385B81D79A14800D05996 /* Assets.xcassets in Resources */,
 				D3E385B61D79A14800D05996 /* Main.storyboard in Resources */,
 				D39C727E1D79B85900E3F43E /* ZealandZones.json in Resources */,
+				D3916B531E15EB49007237E2 /* ZoneInfos.realm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +383,7 @@
 				D39D3B391DCB4E6700121E09 /* MapContentViewController.swift in Sources */,
 				D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */,
 				D3EE3B9A1D79A69C00B08B65 /* MapDataSource.swift in Sources */,
+				D3916B4C1E15D1D3007237E2 /* MapDataModel.swift in Sources */,
 				D39C72801D79BBDA00E3F43E /* SwiftyJSON.swift in Sources */,
 				D3EE3B961D79A65A00B08B65 /* MapViewController.swift in Sources */,
 			);
@@ -500,6 +542,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = KYYVLP4WYT;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MapRoute/Framework/Realm",
+				);
 				INFOPLIST_FILE = MapRoute/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cellpointmobile.MapRoute;
@@ -514,6 +560,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = KYYVLP4WYT;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MapRoute/Framework/Realm",
+				);
 				INFOPLIST_FILE = MapRoute/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cellpointmobile.MapRoute;

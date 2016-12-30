@@ -40,7 +40,7 @@ class MapContentViewController: UIViewController {
         let mapView = {
             guard let mapViewVC = segue.destination as? MapViewController else {return}
             self.mapViewController = mapViewVC
-            self.mapViewController?.dataSource = MapDataSource.sharedDataSource
+            self.mapViewController?.dataSource = MapDataModel.sharedDataModel
         }
         
         guard let identifier = segue.identifier else {return}
