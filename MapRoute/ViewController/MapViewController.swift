@@ -33,7 +33,7 @@ extension MapViewControllerDelegate { // Delegate default
 
 protocol MapViewControllerDataSource: class {
     
-    func zoneData(completion: @escaping ([String:FareZone],[MKPolygon],[ZoneAnnotation])->Void)
+    func zoneData(completion: @escaping ([String:FareZone], [MKPolygon], [ZoneAnnotation]) -> Void)
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,9 +64,9 @@ class LocationAnnotation: MKPointAnnotation {
 
 class MapViewController: UIViewController, MKMapViewDelegate {
     
-    @IBOutlet weak private(set) var mapView : MKMapView!
+    @IBOutlet weak private(set) var mapView: MKMapView!
     
-    private var zoneData = [String:FareZone]()
+    private var zoneData = [String: FareZone]()
     private var polygons = [MKPolygon]()
     private var zoneAnnotations = [ZoneAnnotation]()
     private var locationAnnotations = [LocationAnnotation]()
@@ -76,7 +76,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private var neighbourZones = Set<String>()
     
     private let zoneLabelTag = 8
-    private let zoneLabelSize : CGFloat = 26
+    private let zoneLabelSize: CGFloat = 26
     private let zoneLabelBackgroundColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
     private let zoneLabelBorderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     private let zoneLabelTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
@@ -97,18 +97,18 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     var showBoundingRegion = false
     
-    enum zoneLabelStyle {
+    enum ZoneLabelStyle {
         case basic
         case circularBorder
     }
     
     var showZoneLabels = false
-    var zonesLabelsStyle = zoneLabelStyle.basic
+    var zonesLabelsStyle = ZoneLabelStyle.basic
     
     weak var delegate: MapViewControllerDelegate?
     weak var dataSource: MapViewControllerDataSource?
     
-    private(set) var selectedRouteIndex : Int?
+    private(set) var selectedRouteIndex: Int?
     private(set) var higlightRouteIndices = Set<Int>()
     private(set) var defaultRegion: MKCoordinateRegion?
     private(set) var isNeighbourZoneHidden = false
@@ -162,41 +162,48 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     self.mapView.addOverlays(self.polygons, level: .aboveLabels)
                 }
                 
-                if self.routes.count > 0 {
-                    for (index, route) in self.routes.enumerated() {
-                        route.title = String(index)
-                        if (index != self.selectedRouteIndex) {self.mapView.add(route, level: .aboveLabels)}
-                    }
-                    if let selectedRouteIndex = self.selectedRouteIndex { // Add selected route to top
-                        self.mapView.add(self.routes[selectedRouteIndex], level: .aboveLabels)
-                    }
-                }
-                
-                let showLocations = (self.locationAnnotations.count > 0)
-                let showSelectedZone = (self.selectedZones.count > 0)
-                let showRegion = (self.defaultRegion != nil || self.areaBoundingRegion != nil)
-                
-                if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
-                    if showLocations || showSelectedZone || showRegion {
-                        self.mapView.addAnnotations(self.zoneAnnotations)
-                    } else {
-                        self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
-                    }
-                }
-                
-                if showLocations == true && showSelectedZone == true {
-                    self.mapView.addAnnotations(self.locationAnnotations)
-                    self.zoomIntoSelectedZone()
-                } else if showLocations == true {
-                    self.mapView.showAnnotations(self.locationAnnotations, animated: false)
-                } else if showSelectedZone == true {
-                    self.zoomIntoSelectedZone()
-                }
-                
-                if self.tapZoneLock == false {
-                    self.showNeighbourZone()
+                self.showMapOverlay()
+            }
+        }
+    }
+    
+    private func showMapOverlay() {
+        
+        if self.routes.count > 0 {
+            for (index, route) in self.routes.enumerated() {
+                route.title = String(index)
+                if index != self.selectedRouteIndex {
+                    self.mapView.add(route, level: .aboveLabels)
                 }
             }
+            if let selectedRouteIndex = self.selectedRouteIndex { // Add selected route to top
+                self.mapView.add(self.routes[selectedRouteIndex], level: .aboveLabels)
+            }
+        }
+        
+        let showLocations = (self.locationAnnotations.count > 0)
+        let showSelectedZone = (self.selectedZones.count > 0)
+        let showRegion = (self.defaultRegion != nil || self.areaBoundingRegion != nil)
+        
+        if self.zoneAnnotations.count > 0 && self.showZoneLabels == true {
+            if showLocations || showSelectedZone || showRegion {
+                self.mapView.addAnnotations(self.zoneAnnotations)
+            } else {
+                self.mapView.showAnnotations(self.zoneAnnotations, animated: false)
+            }
+        }
+        
+        if showLocations == true && showSelectedZone == true {
+            self.mapView.addAnnotations(self.locationAnnotations)
+            self.zoomIntoSelectedZone()
+        } else if showLocations == true {
+            self.mapView.showAnnotations(self.locationAnnotations, animated: false)
+        } else if showSelectedZone == true {
+            self.zoomIntoSelectedZone()
+        }
+        
+        if self.tapZoneLock == false {
+            self.showNeighbourZone()
         }
     }
     
@@ -243,23 +250,23 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private func highlightRoute(routeIndex: Int) {
         
-        for (index,route) in self.routes.enumerated() {
+        for (index, route) in self.routes.enumerated() {
             guard let routeRender = self.mapView.renderer(for: route) as? MKPolylineRenderer else {continue}
             routeRender.strokeColor = (index == routeIndex) ? self.routeSelectedLineColor : self.routeLineColor
-            if (index == routeIndex) {
+            if index == routeIndex {
                 let topIndex = self.mapView.overlays.count - 1
                 self.mapView.insert(route, at: topIndex)
             }
         }
     }
     
-    private typealias zonePolygonInfo = (zoneNumber:String,polygon:MKPolygon)
+    private typealias ZonePolygonInfo = (zoneNumber: String, polygon: MKPolygon)
     
-    private func mapViewPolygon(enumerate:(zonePolygonInfo)->Bool) {
+    private func mapViewPolygon(enumerate: (ZonePolygonInfo) -> Bool) {
         
         for overlay in self.mapView.overlays {
             guard let polygon = overlay as? MKPolygon, let zoneNumber = polygon.title else {continue}
-            let polygonInfo:zonePolygonInfo = (zoneNumber,polygon)
+            let polygonInfo: ZonePolygonInfo = (zoneNumber, polygon)
             let stop = enumerate(polygonInfo)
             if stop == true {break}
         }
@@ -269,18 +276,18 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         guard self.polygons.count > 0 else {return}
         
-        let mapRects = self.polygons.filter{self.selectedZones.contains($0.title ?? "")}.map{self.mapView.mapRectThatFits($0.boundingMapRect)}
+        let mapRects = self.polygons.filter {self.selectedZones.contains($0.title ?? "")}.map {self.mapView.mapRectThatFits($0.boundingMapRect)}
         
-        let minX = mapRects.map{$0.origin.x}.min()
-        let minY = mapRects.map{$0.origin.y}.min()
-        let maxX = mapRects.map{$0.origin.x+$0.size.width}.max()
-        let maxY = mapRects.map{$0.origin.y+$0.size.height}.max()
+        let minX = mapRects.map {$0.origin.x}.min()
+        let minY = mapRects.map {$0.origin.y}.min()
+        let maxX = mapRects.map {$0.origin.x+$0.size.width}.max()
+        let maxY = mapRects.map {$0.origin.y+$0.size.height}.max()
         guard let pX = minX, let pY = minY else {return}
         guard let mX = maxX, let mY = maxY else {return}
         let width = mX - pX
         let height = mY - pY
-        let zoomMapRect = MKMapRect(origin: MKMapPointMake(pX, pY), size: MKMapSizeMake(width,height))
-        let edgePadding = UIEdgeInsetsMake(10, 10, 10, 10)
+        let zoomMapRect = MKMapRect(origin: MKMapPointMake(pX, pY), size: MKMapSizeMake(width, height))
+        let edgePadding = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         self.mapView.setVisibleMapRect(zoomMapRect, edgePadding: edgePadding, animated: animated)
     }
@@ -288,7 +295,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     //------------------------------------------------------------------------------------------
     // MARK: - User Action (Public)
     
-    func displayJourney(zones:Set<String>? = nil,locations:[LocationAnnotation]? = nil, route:[CLLocationCoordinate2D]? = nil) {
+    func displayJourney(zones: Set<String>? = nil, locations: [LocationAnnotation]? = nil, route: [CLLocationCoordinate2D]? = nil) {
         
         self.tapZoneLock = true
         
@@ -305,7 +312,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    func selectRoute(routeIndex : Int) {
+    func selectRoute(routeIndex: Int) {
         
         guard routeIndex < self.routes.count else {return}
         self.selectedRouteIndex = routeIndex
@@ -330,8 +337,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.higlightRouteIndices.removeAll()
         
         guard let routes = routes, routes.count > 0 else {return}
-        let polylines = routes.map{ MKPolyline(coordinates: $0, count:$0.count)}
-        _ = polylines.enumerated().map{$1.title = String($0)}
+        let polylines = routes.map { MKPolyline(coordinates: $0, count:$0.count)}
+        _ = polylines.enumerated().map {$1.title = String($0)}
         self.routes += polylines
         let highlightRoutes = Set(0...(self.routes.count-1))
         self.higlightRouteIndices = self.higlightRouteIndices.union(highlightRoutes)
@@ -341,11 +348,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func showNeighbourZone(hidden: Bool = false) {
         
         guard self.selectedZones.count > 0 else {return}
-        if (hidden == false &&  self.isSelectedZonesReachMaxLimit() == true) {
+        if hidden == false &&  self.isSelectedZonesReachMaxLimit() == true {
             self.isNeighbourZoneHidden = true
             return
         }
-        var neighbourZone = Set(self.selectedZones.flatMap{self.zoneData[$0]?.neighbourZones}.flatMap{$0})
+        var neighbourZone = Set(self.selectedZones.flatMap {self.zoneData[$0]?.neighbourZones}.flatMap {$0})
         self.neighbourZones = neighbourZone
         neighbourZone.subtract(self.selectedZones)
         let highlightState: ZonePolygonHighlightState = (hidden == false) ? .neighbour : .deselect
@@ -358,6 +365,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.mapView.setRegion(region, animated: animated)
         self.defaultRegion = region
         return region
+    }
+    
+    func zoomIntoRegion(region: MKCoordinateRegion, animated: Bool = true) {
+        self.mapView.setRegion(region, animated: animated)
+        self.defaultRegion = region
     }
     
     //------------------------------------------------------------------------------------------
@@ -376,7 +388,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    private func tapRoute(tapMapPoint : MKMapPoint) {
+    private func tapRoute(tapMapPoint: MKMapPoint) {
         
         guard self.routes.count > 0 else {return}
         
@@ -385,13 +397,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         for (index, route) in self.routes.enumerated() {
             let distance = distanceToRoute(point: tapMapPoint, route: route)
-            if distance < nearestDistance  {
+            if distance < nearestDistance {
                 nearestDistance = distance
                 routeIndex = index
             }
         }
         
-        let maxDistance : Double = 5000
+        let maxDistance: Double = 5000
         guard nearestDistance <= maxDistance && routeIndex >= 0 else {return}
         
         if self.delegate?.shoudSelectRoute(index: routeIndex) == true {
@@ -418,19 +430,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let rB = routePoints[index+1]
             let xDelta = rB.x - rA.x
             let yDelta = rB.y - rA.y
-            if (xDelta == 0.0 && yDelta == 0.0) { // Points must not be equal
+            if xDelta == 0.0 && yDelta == 0.0 { // Points must not be equal
                 continue
             }
             
             let u: Double = ((point.x - rA.x) * xDelta + (point.y - rA.y) * yDelta) / (xDelta * xDelta + yDelta * yDelta)
             var ptClosest = MKMapPoint()
             
-            if (u < 0.0) {
+            if u < 0.0 {
                 ptClosest = rA
-            } else if (u > 1.0) {
+            } else if u > 1.0 {
                 ptClosest = rB
             } else {
-                ptClosest = MKMapPointMake(rA.x + u * xDelta, rA.y + u * yDelta);
+                ptClosest = MKMapPointMake(rA.x + u * xDelta, rA.y + u * yDelta)
             }
             distance = min(distance, MKMetersBetweenMapPoints(ptClosest, point))
         }
@@ -448,19 +460,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         var zoneAction = ZoneAction.invalid
         if selectedZones.contains(zoneNumber) {
-            guard (self.isSelectedZonesConnectedAfterRemoval(removalZone: zoneNumber) == true) else {return .invalid}
+            guard self.isSelectedZonesConnectedAfterRemoval(removalZone: zoneNumber) == true else {return .invalid}
             selectedZones.remove(zoneNumber)
             zoneAction = .deselected
         } else if self.isSelectedZonesReachMaxLimit() == true {
             return .reachMaxLimit
-        } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber){
+        } else if selectedZones.count == 0 || self.neighbourZones.contains(zoneNumber) {
             selectedZones.insert(zoneNumber)
             zoneAction = .selected
         }
         return zoneAction
     }
     
-    private func tapZone(tapMapPoint : MKMapPoint) {
+    private func tapZone(tapMapPoint: MKMapPoint) {
         
         self.mapViewPolygon { polygonInfo in
             
@@ -492,6 +504,27 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    private func findNewNeighbourZones(zones: Set<String>) -> Set<String> {
+        
+        var newNeighbourZones = Set(zones)
+        newNeighbourZones = newNeighbourZones.subtracting(self.neighbourZones)
+        newNeighbourZones = newNeighbourZones.subtracting(self.selectedZones)
+        self.neighbourZones = self.neighbourZones.union(zones)
+        return newNeighbourZones
+    }
+    
+    private func findNeighbourZonesToRemove(tapZone: String, zones: Set<String>) -> Set<String> {
+        
+        var removeNeighbourZones = Set(zones)
+        removeNeighbourZones = removeNeighbourZones.subtracting(self.selectedZones)
+        for selectedZone in self.selectedZones {
+            guard tapZone != selectedZone, let neighbourZones = self.zoneData[selectedZone]?.neighbourZones else {continue}
+            removeNeighbourZones = removeNeighbourZones.subtracting(neighbourZones)
+        }
+        self.neighbourZones = self.neighbourZones.subtracting(removeNeighbourZones)
+        return removeNeighbourZones
+    }
+    
     private func updateNeighbourZone(tapZoneNumber: String, action: ZoneAction) {
         
         guard action != .invalid else {return}
@@ -505,35 +538,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         if let zones = self.zoneData[tapZoneNumber]?.neighbourZones {
             
-            let newNeighbourZones : (Set<String>) -> Set<String> = {zones in
-                
-                var newNeighbourZones = Set(zones)
-                newNeighbourZones = newNeighbourZones.subtracting(self.neighbourZones)
-                newNeighbourZones = newNeighbourZones.subtracting(self.selectedZones)
-                self.neighbourZones = self.neighbourZones.union(zones)
-                return newNeighbourZones
-            }
-            
-            let removeNeighbourZones : (String,Set<String>) -> Set<String> = { tapZone, zones in
-                
-                var removeNeighbourZones = Set(zones)
-                removeNeighbourZones = removeNeighbourZones.subtracting(self.selectedZones)
-                for selectedZone in self.selectedZones {
-                    guard tapZone != selectedZone, let neighbourZones = self.zoneData[selectedZone]?.neighbourZones else {continue}
-                    removeNeighbourZones = removeNeighbourZones.subtracting(neighbourZones)
-                }
-                self.neighbourZones = self.neighbourZones.subtracting(removeNeighbourZones)
-                return removeNeighbourZones
-            }
-            
             var addZones = Set<String>()
             var removeZones = Set<String>()
             
             switch action {
             case .selected:
-                addZones = newNeighbourZones(zones)
+                addZones = self.findNewNeighbourZones(zones: zones)
             case .deselected:
-                removeZones = removeNeighbourZones(tapZoneNumber,zones)
+                removeZones =  self.findNeighbourZonesToRemove(tapZone: tapZoneNumber, zones: zones)
                 if self.neighbourZones.contains(tapZoneNumber) && self.neighbourZones.count > 1 {
                     addZones = [tapZoneNumber]
                 }
@@ -559,7 +571,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             var nearbySelectedZones = self.zoneData[zoneNumber]?.neighbourZones.intersection(selectedZonesAfterRemoval) ?? Set<String>()
             nearbySelectedZones.subtract(connectedZones)
             connectedZones = connectedZones.union(nearbySelectedZones)
-            _ = nearbySelectedZones.map{findConnectedZones(zoneNumber: $0)}
+            _ = nearbySelectedZones.map {findConnectedZones(zoneNumber: $0)}
         }
         
         guard let randomSelectedZone = selectedZonesAfterRemoval.first else {return false}
@@ -609,7 +621,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private func limitedVisibleAreaToBoundingRegion() {
         
-        if self.areaOverlay == nil, let region = self.areaBoundingRegion  {
+        if self.areaOverlay == nil, let region = self.areaBoundingRegion {
             let mapRect = MapViewController.convertMapRegionToMapRect(region: region)
             let circle = MKCircle(mapRect: mapRect)
             self.areaOverlay = circle
@@ -649,7 +661,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     private func configureZoneNumberAnnotation(mapView: MKMapView, zoneAnnotation: ZoneAnnotation) -> MKAnnotationView {
         
-        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: zoneAnnotation.identifier) ?? MKAnnotationView(annotation: zoneAnnotation, reuseIdentifier: zoneAnnotation.identifier)
+        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: zoneAnnotation.identifier) ??
+            MKAnnotationView(annotation: zoneAnnotation, reuseIdentifier: zoneAnnotation.identifier)
         annotationView.annotation = zoneAnnotation
         annotationView.isHidden = (mapView.region.span.latitudeDelta > self.hiddenZoneAnnotationDelta)
         
@@ -657,7 +670,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             zoneNumberLabel.text = zoneAnnotation.title ?? ""
         } else {
             
-            let centerLabel:(CGFloat)->CGRect = { size in
+            let centerLabel: (CGFloat) -> CGRect = { size in
                 let point = -size/2
                 return CGRect(x: point, y: point, width: size, height: size)
             }
@@ -768,7 +781,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             return nil
         }
         
-        if let zoneAnnotation = annotation as? ZoneAnnotation  {
+        if let zoneAnnotation = annotation as? ZoneAnnotation {
             return self.configureZoneNumberAnnotation(mapView: mapView, zoneAnnotation: zoneAnnotation)
         } else if let locationAnnotation = annotation as? LocationAnnotation {
             return self.configureLocationAnnotation(mapView: mapView, locationAnnotation: locationAnnotation)
