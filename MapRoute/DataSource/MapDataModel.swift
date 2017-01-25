@@ -33,7 +33,7 @@ class MapDataModel: MapViewControllerDataSource {
     static let sharedDataModel = MapDataModel()
     static fileprivate let realmFileName = "ZoneInfos"
     
-    func zoneData(completion: @escaping ([String:FareZone],[MKPolygon],[ZoneAnnotation])->Void)   {
+    func zoneData(completion: @escaping ([String:FareZone], [MKPolygon], [ZoneAnnotation]) -> Void) {
         
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
             
@@ -43,11 +43,11 @@ class MapDataModel: MapViewControllerDataSource {
             
             let zoneInfos = realm.objects(ZoneInfo.self)
             
-            var zoneData = [String:FareZone]()
+            var zoneData = [String: FareZone]()
             var zonePolygons = [MKPolygon]()
             var zoneAnnotations = [ZoneAnnotation]()
             
-            let polygon: (List<Coordinate>) -> MKPolygon? =  { coordinates in
+            let polygon: (List<Coordinate>) -> MKPolygon? = { coordinates in
                 var points = [CLLocationCoordinate2D]()
                 points += coordinates.flatMap {CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)}
                 guard points.count != 0 else {return nil}
@@ -71,16 +71,16 @@ class MapDataModel: MapViewControllerDataSource {
                 
                 polygon.title = zoneNumber
                 zonePolygons += [polygon]
-            
+                
                 let zone = FareZone(name: name, zoneNumber: zoneNumber, neighbourZones: Set(neighbourZones), centerCoordinate: center, polygon: polygon)
                 zoneData[zoneNumber] = zone
             }
             
-//            zoneData.flatMap{$0.value}.sorted{$0.0.zoneNumber.localizedStandardCompare($0.1.zoneNumber) == .orderedAscending}.forEach{ zone in
-//                print("\(zone.zoneNumber) \(zone.name)")
-//            }
-
-            completion(zoneData,zonePolygons,zoneAnnotations)
+            //            zoneData.flatMap{$0.value}.sorted{$0.0.zoneNumber.localizedStandardCompare($0.1.zoneNumber) == .orderedAscending}.forEach{ zone in
+            //                print("\(zone.zoneNumber) \(zone.name)")
+            //            }
+            
+            completion(zoneData, zonePolygons, zoneAnnotations)
         }
     }
 }
