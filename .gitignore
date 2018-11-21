@@ -6,6 +6,7 @@
 
 ## Build generated
 build/
+Products/
 DerivedData
 
 ## Various settings
@@ -29,9 +30,28 @@ xcuserdata
 ## Obj-C/Swift specific
 *.hmap
 *.ipa
+*.dSYM.zip
+*.dSYM
 
-# Swift Package Manager
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+## Swift Package Manager
 .build/
 
-## Framework
-**/Framework/
+## Pods
+Pods/
+*.lock
+
+## Carthage
+Carthage/Build
+
+## Jazzy docs
+docs/
+
+## fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
