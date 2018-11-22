@@ -9,9 +9,9 @@
 import UIKit
 
 class MapContentViewController: UIViewController {
-    
-    private weak var mapViewController : MapViewController?
-    
+
+    private weak var mapViewController: MapViewController?
+
     //------------------------------------------------------------------------------------------
     // MARK: - View
 
@@ -26,26 +26,26 @@ class MapContentViewController: UIViewController {
     }
 
     private func configureView() {
-        
+
         self.mapViewController?.showZoneLabels = true
     }
 
     //------------------------------------------------------------------------------------------
     // MARK: - Navigation
-    
+
     private let mapViewControllerSegueIdentifier = "MapViewController"
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+
         let mapView = {
             guard let mapViewVC = segue.destination as? MapViewController else {return}
             self.mapViewController = mapViewVC
             self.mapViewController?.dataSource = MapDataModel.sharedDataModel
         }
-        
+
         guard let identifier = segue.identifier else {return}
-        
-        switch identifier  {
+
+        switch identifier {
         case self.mapViewControllerSegueIdentifier:
             mapView()
         default:

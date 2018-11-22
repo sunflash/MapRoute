@@ -215,6 +215,7 @@
 				D3E385A81D79A14800D05996 /* Frameworks */,
 				D3E385A91D79A14800D05996 /* Resources */,
 				91617FC7841D1414264BFE55 /* [CP] Embed Pods Frameworks */,
+				D368F5A821A6F86F00243264 /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -380,6 +381,24 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Map-MapRoute/Pods-Map-MapRoute-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		D368F5A821A6F86F00243264 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which ${PODS_ROOT}/SwiftLint/swiftlint >/dev/null; then\n    ${PODS_ROOT}/SwiftLint/swiftlint autocorrect\n    ${PODS_ROOT}/SwiftLint/swiftlint\nelse\n    echo \"👊👊👊 SwiftLint is not installed, run pod install 💣💣💣\"\nfi\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -494,7 +513,7 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -541,7 +560,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
