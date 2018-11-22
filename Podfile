@@ -4,8 +4,8 @@ use_frameworks!
 
 abstract_target 'Map' do
 
+    pod 'SwiftyJSON'
     pod 'RealmSwift'
-
     pod 'SwiftLint'
 
     target 'MapRoute' do

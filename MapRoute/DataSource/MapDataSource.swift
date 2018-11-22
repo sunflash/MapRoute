@@ -8,6 +8,7 @@
 
 import Foundation
 import MapKit
+import SwiftyJSON
 
 class MapDataSource: MapViewControllerDataSource {
     
@@ -21,7 +22,7 @@ class MapDataSource: MapViewControllerDataSource {
             guard let url = fileURL else {return}
             let jsonData = try? Data(contentsOf: url)
             guard let data = jsonData else {return}
-            let zealand = JSON(data: data)
+            guard let zealand = try? JSON(data: data) else {return}
             
             let polygon: (JSON) -> MKPolygon? =  { coordinates in
                 

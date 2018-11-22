@@ -9,6 +9,7 @@
 import Foundation
 import MapKit
 import RealmSwift
+import SwiftyJSON
 
 class Coordinate: Object {
     dynamic var latitude: Double = 0
@@ -96,7 +97,7 @@ extension ConvertMapData {
             guard let url = fileURL else {return}
             let jsonData = try? Data(contentsOf: url)
             guard let data = jsonData else {return}
-            let zealand = JSON(data: data)
+            guard let zealand = try? JSON(data: data) else {return}
             
             let documentURL = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
             let realmFileURL = documentURL.appendingPathComponent("\(self.realmFileName).realm")
