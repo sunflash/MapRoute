@@ -123,7 +123,9 @@ extension ConvertMapData {
 
             for (_, zoneInfo) in zealand["features"] {
 
-                guard let geometryType = zoneInfo["geometry", "type"].string, geometryType == "Polygon", let polygonCoordinates = polygon(zoneInfo["geometry", "coordinates"][0]) else {continue}
+                guard let geometryType = zoneInfo["geometry", "type"].string,
+                    geometryType == "Polygon",
+                    let polygonCoordinates = polygon(zoneInfo["geometry", "coordinates"][0]) else {continue}
 
                 let nameO = zoneInfo["properties", "Name"].string
                 let zoneNumberO = zoneInfo["properties", "Shortname"].string
