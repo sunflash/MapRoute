@@ -32,8 +32,8 @@ class ZoneInfo: Object {
 class MapDataModel: MapViewControllerDataSource {
 
     static let sharedDataModel = MapDataModel()
-    static private let realmFileName = "ZoneInfos"
-    static private let jsonFileName = "ZealandZones"
+    static private let realmFileName = "ZoneInfos_v1"
+    static private let jsonFileName = "ZealandZones_v1"
 
     func zoneData(completion: @escaping ([String: FareZone], [MKPolygon], [ZoneAnnotation]) -> Void) {
 
@@ -90,7 +90,7 @@ class MapDataModel: MapViewControllerDataSource {
 private typealias ConvertMapData = MapDataModel
 extension ConvertMapData {
 
-    class func convertZoneJsonToRealm() { // swiftlint:disable:this cyclomatic_complexity
+    class func convertZoneJsonToRealm() {
 
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
 
@@ -132,8 +132,13 @@ extension ConvertMapData {
                 // swiftlint:disable:next force_unwrapping
                 let neighbourZonesO = zoneInfo["properties", "NeighbourZones"].string?.components(separatedBy: ",").filter {Int($0) != nil}.map {String(Int($0)!-1000)}
                 let centerCoordinateO = zoneInfo["properties", "PolygonCentroid"].string?.components(separatedBy: ",")
-                guard let name = nameO, let zoneNumber = zoneNumberO, let neighbourZones = neighbourZonesO else {continue}
-                guard let centerCoordinate = centerCoordinateO, let centerLat = Double(centerCoordinate[1]), let centerLon = Double(centerCoordinate[0]) else {continue}
+                guard let name = nameO, let zoneNumber = zoneNumberO, let neighbourZones = neighbourZonesO,
+                    let centerCoordinate = centerCoordinateO,
+                    let centerLat = Double(centerCoordinate[1]),
+                    let centerLon = Double(centerCoordinate[0]) else {
+                        print("!! Misssing data in GeoJSON")
+                        continue
+                }
                 let center = Coordinate()
                 center.latitude = centerLat
                 center.longitude = centerLon
