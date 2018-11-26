@@ -32,7 +32,8 @@ class ZoneInfo: Object {
 class MapDataModel: MapViewControllerDataSource {
 
     static let sharedDataModel = MapDataModel()
-    static fileprivate let realmFileName = "ZoneInfos"
+    static private let realmFileName = "ZoneInfos"
+    static private let jsonFileName = "ZealandZones"
 
     func zoneData(completion: @escaping ([String: FareZone], [MKPolygon], [ZoneAnnotation]) -> Void) {
 
@@ -89,11 +90,11 @@ class MapDataModel: MapViewControllerDataSource {
 private typealias ConvertMapData = MapDataModel
 extension ConvertMapData {
 
-    class func convertZoneJsonToRealm() {
+    class func convertZoneJsonToRealm() { // swiftlint:disable:this cyclomatic_complexity
 
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
 
-            let fileURL = Bundle.main.url(forResource: "ZealandZones", withExtension: "json")
+            let fileURL = Bundle.main.url(forResource: jsonFileName, withExtension: "json")
             guard let url = fileURL else {return}
             let jsonData = try? Data(contentsOf: url)
             guard let data = jsonData else {return}

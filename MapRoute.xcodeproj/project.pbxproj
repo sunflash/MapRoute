@@ -15,9 +15,9 @@
 		D368F59421A6EBCF00243264 /* MapContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D368F58F21A6EBCF00243264 /* MapContentViewController.swift */; };
 		D368F59A21A6EC2300243264 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D368F59621A6EC2300243264 /* LaunchScreen.storyboard */; };
 		D368F59B21A6EC2300243264 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D368F59821A6EC2300243264 /* Main.storyboard */; };
-		D368F5A221A6EC7C00243264 /* ZealandZones.json in Resources */ = {isa = PBXBuildFile; fileRef = D368F59F21A6EC7C00243264 /* ZealandZones.json */; };
+		D368F5A221A6EC7C00243264 /* ZealandZones_v1.json in Resources */ = {isa = PBXBuildFile; fileRef = D368F59F21A6EC7C00243264 /* ZealandZones_v1.json */; };
 		D368F5A321A6EC7C00243264 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D368F5A021A6EC7C00243264 /* Assets.xcassets */; };
-		D368F5A421A6EC7C00243264 /* ZoneInfos.realm in Resources */ = {isa = PBXBuildFile; fileRef = D368F5A121A6EC7C00243264 /* ZoneInfos.realm */; };
+		D368F5A421A6EC7C00243264 /* ZoneInfos_v1.realm in Resources */ = {isa = PBXBuildFile; fileRef = D368F5A121A6EC7C00243264 /* ZoneInfos_v1.realm */; };
 		D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385AE1D79A14800D05996 /* AppDelegate.swift */; };
 		D3E385C61D79A14800D05996 /* MapRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385C51D79A14800D05996 /* MapRouteTests.swift */; };
 		D3E385D11D79A14800D05996 /* MapRouteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385D01D79A14800D05996 /* MapRouteUITests.swift */; };
@@ -52,9 +52,9 @@
 		D368F58F21A6EBCF00243264 /* MapContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapContentViewController.swift; sourceTree = "<group>"; };
 		D368F59721A6EC2300243264 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D368F59921A6EC2300243264 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		D368F59F21A6EC7C00243264 /* ZealandZones.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ZealandZones.json; sourceTree = "<group>"; };
+		D368F59F21A6EC7C00243264 /* ZealandZones_v1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ZealandZones_v1.json; sourceTree = "<group>"; };
 		D368F5A021A6EC7C00243264 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D368F5A121A6EC7C00243264 /* ZoneInfos.realm */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZoneInfos.realm; sourceTree = "<group>"; };
+		D368F5A121A6EC7C00243264 /* ZoneInfos_v1.realm */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZoneInfos_v1.realm; sourceTree = "<group>"; };
 		D368F5A521A6EC8B00243264 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D3E385AB1D79A14800D05996 /* MapRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3E385AE1D79A14800D05996 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -125,11 +125,27 @@
 		D368F59E21A6EC7C00243264 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
-				D368F59F21A6EC7C00243264 /* ZealandZones.json */,
+				D379DCBD21AC25AA00BA6D44 /* Data */,
 				D368F5A021A6EC7C00243264 /* Assets.xcassets */,
-				D368F5A121A6EC7C00243264 /* ZoneInfos.realm */,
 			);
 			path = Resource;
+			sourceTree = "<group>";
+		};
+		D379DCBD21AC25AA00BA6D44 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				D379DCBE21AC25BA00BA6D44 /* v1 */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		D379DCBE21AC25BA00BA6D44 /* v1 */ = {
+			isa = PBXGroup;
+			children = (
+				D368F59F21A6EC7C00243264 /* ZealandZones_v1.json */,
+				D368F5A121A6EC7C00243264 /* ZoneInfos_v1.realm */,
+			);
+			path = v1;
 			sourceTree = "<group>";
 		};
 		D3E385A21D79A14800D05996 = {
@@ -319,8 +335,8 @@
 				D368F59B21A6EC2300243264 /* Main.storyboard in Resources */,
 				D368F59A21A6EC2300243264 /* LaunchScreen.storyboard in Resources */,
 				D368F5A321A6EC7C00243264 /* Assets.xcassets in Resources */,
-				D368F5A221A6EC7C00243264 /* ZealandZones.json in Resources */,
-				D368F5A421A6EC7C00243264 /* ZoneInfos.realm in Resources */,
+				D368F5A221A6EC7C00243264 /* ZealandZones_v1.json in Resources */,
+				D368F5A421A6EC7C00243264 /* ZoneInfos_v1.realm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
