@@ -32,12 +32,16 @@ class ZoneInfo: Object {
 class MapDataModel: MapViewControllerDataSource {
 
     static let sharedDataModel = MapDataModel()
-    static private let realmFileName = "ZoneInfos_v1"
-    static private let jsonFileName = "ZealandZones_v1"
+    static private let realmFileName = "ZoneInfos_v2"
+
+    static private let jsonFileName = "ZealandZones_v2"
+    static private let convertedRealmFileName = "Converted_v2"
 
     func zoneData(completion: @escaping ([String: FareZone], [MKPolygon], [ZoneAnnotation]) -> Void) {
 
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async {
+
+            print("!! Load:", MapDataModel.realmFileName)
 
             let realmFileURL = Bundle.main.url(forResource: MapDataModel.realmFileName, withExtension: "realm")
             let config = Realm.Configuration(fileURL: realmFileURL, readOnly: true)
@@ -101,9 +105,10 @@ extension ConvertMapData {
             guard let zealand = try? JSON(data: data) else {return}
 
             let documentURL = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
-            let realmFileURL = documentURL.appendingPathComponent("\(self.realmFileName).realm")
+            let realmFileURL = documentURL.appendingPathComponent("\(convertedRealmFileName).realm")
             guard let realm = try? Realm(fileURL: realmFileURL) else {return}
             print("!! \(documentURL)")
+            print("!! Convert: \(jsonFileName) --> \(convertedRealmFileName)")
 
             let polygon: (JSON) -> [Coordinate]? = { coordinates in
 
@@ -127,15 +132,15 @@ extension ConvertMapData {
                     geometryType == "Polygon",
                     let polygonCoordinates = polygon(zoneInfo["geometry", "coordinates"][0]) else {continue}
 
-                let nameO = zoneInfo["properties", "Name"].string
-                let zoneNumberO = zoneInfo["properties", "Shortname"].string
+                let nameO = zoneInfo["properties", "ZoneName"].string
+                let zoneNumberO = zoneInfo["properties", "OperatorZoneID"].int
                 // swiftlint:disable:next force_unwrapping
-                let neighbourZonesO = zoneInfo["properties", "NeighbourZones"].string?.components(separatedBy: ",").filter {Int($0) != nil}.map {String(Int($0)!-1000)}
-                let centerCoordinateO = zoneInfo["properties", "PolygonCentroid"].string?.components(separatedBy: ",")
+                let neighbourZonesO = zoneInfo["properties", "Neighbours"].string?.components(separatedBy: ",").filter {Int($0) != nil}.map {String(Int($0)!-1000)}
+                let centerLongitude = zoneInfo["properties", "CentLong"].double
+                let centerLatitude = zoneInfo["properties", "CentLat"].double
                 guard let name = nameO, let zoneNumber = zoneNumberO, let neighbourZones = neighbourZonesO,
-                    let centerCoordinate = centerCoordinateO,
-                    let centerLat = Double(centerCoordinate[1]),
-                    let centerLon = Double(centerCoordinate[0]) else {
+                    let centerLat = centerLatitude,
+                    let centerLon = centerLongitude else {
                         print("!! Misssing data in GeoJSON")
                         continue
                 }
@@ -145,7 +150,7 @@ extension ConvertMapData {
 
                 let zoneData = ZoneInfo()
                 zoneData.zoneName = name
-                zoneData.zoneNumber = zoneNumber
+                zoneData.zoneNumber = "\(zoneNumber)"
                 zoneData.neighbourZones = neighbourZones.joined(separator: ",")
                 zoneData.center = center
                 polygonCoordinates.forEach {zoneData.polygonCoordinates.append($0)}

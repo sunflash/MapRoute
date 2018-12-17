@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		785DEA2A55666D26B846B78B /* Pods_Map_MapRoute.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C7EC857FF4AA17B95371D77 /* Pods_Map_MapRoute.framework */; };
-		D368F59021A6EBCF00243264 /* MapDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D368F58A21A6EBCF00243264 /* MapDataSource.swift */; };
 		D368F59121A6EBCF00243264 /* MapDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D368F58B21A6EBCF00243264 /* MapDataModel.swift */; };
 		D368F59221A6EBCF00243264 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D368F58D21A6EBCF00243264 /* MapViewController.swift */; };
 		D368F59321A6EBCF00243264 /* OptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D368F58E21A6EBCF00243264 /* OptionsViewController.swift */; };
@@ -18,6 +17,8 @@
 		D368F5A221A6EC7C00243264 /* ZealandZones_v1.json in Resources */ = {isa = PBXBuildFile; fileRef = D368F59F21A6EC7C00243264 /* ZealandZones_v1.json */; };
 		D368F5A321A6EC7C00243264 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D368F5A021A6EC7C00243264 /* Assets.xcassets */; };
 		D368F5A421A6EC7C00243264 /* ZoneInfos_v1.realm in Resources */ = {isa = PBXBuildFile; fileRef = D368F5A121A6EC7C00243264 /* ZoneInfos_v1.realm */; };
+		D39168E421C7CB50005CC483 /* ZealandZones_v2.json in Resources */ = {isa = PBXBuildFile; fileRef = D39168E321C7CB50005CC483 /* ZealandZones_v2.json */; };
+		D39168E621C7D1F9005CC483 /* ZoneInfos_v2.realm in Resources */ = {isa = PBXBuildFile; fileRef = D39168E521C7D1F9005CC483 /* ZoneInfos_v2.realm */; };
 		D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385AE1D79A14800D05996 /* AppDelegate.swift */; };
 		D3E385C61D79A14800D05996 /* MapRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385C51D79A14800D05996 /* MapRouteTests.swift */; };
 		D3E385D11D79A14800D05996 /* MapRouteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E385D01D79A14800D05996 /* MapRouteUITests.swift */; };
@@ -45,7 +46,6 @@
 		5C7EC857FF4AA17B95371D77 /* Pods_Map_MapRoute.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Map_MapRoute.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66AC6AACB54348EB78EBAAFF /* Pods-Map-MapRoute.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map-MapRoute.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Map-MapRoute/Pods-Map-MapRoute.debug.xcconfig"; sourceTree = "<group>"; };
 		CF5A62A3220253A48AB1F7FB /* Pods-Map-MapRoute.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Map-MapRoute.release.xcconfig"; path = "Pods/Target Support Files/Pods-Map-MapRoute/Pods-Map-MapRoute.release.xcconfig"; sourceTree = "<group>"; };
-		D368F58A21A6EBCF00243264 /* MapDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapDataSource.swift; sourceTree = "<group>"; };
 		D368F58B21A6EBCF00243264 /* MapDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapDataModel.swift; sourceTree = "<group>"; };
 		D368F58D21A6EBCF00243264 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		D368F58E21A6EBCF00243264 /* OptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsViewController.swift; sourceTree = "<group>"; };
@@ -56,6 +56,8 @@
 		D368F5A021A6EC7C00243264 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D368F5A121A6EC7C00243264 /* ZoneInfos_v1.realm */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZoneInfos_v1.realm; sourceTree = "<group>"; };
 		D368F5A521A6EC8B00243264 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D39168E321C7CB50005CC483 /* ZealandZones_v2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ZealandZones_v2.json; sourceTree = "<group>"; };
+		D39168E521C7D1F9005CC483 /* ZoneInfos_v2.realm */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZoneInfos_v2.realm; sourceTree = "<group>"; };
 		D3E385AB1D79A14800D05996 /* MapRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3E385AE1D79A14800D05996 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D3E385C11D79A14800D05996 /* MapRouteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapRouteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,7 +99,6 @@
 		D368F58921A6EBCF00243264 /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
-				D368F58A21A6EBCF00243264 /* MapDataSource.swift */,
 				D368F58B21A6EBCF00243264 /* MapDataModel.swift */,
 			);
 			path = DataSource;
@@ -135,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				D379DCBE21AC25BA00BA6D44 /* v1 */,
+				D39168E221C7CB50005CC483 /* v2 */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -146,6 +148,15 @@
 				D368F5A121A6EC7C00243264 /* ZoneInfos_v1.realm */,
 			);
 			path = v1;
+			sourceTree = "<group>";
+		};
+		D39168E221C7CB50005CC483 /* v2 */ = {
+			isa = PBXGroup;
+			children = (
+				D39168E321C7CB50005CC483 /* ZealandZones_v2.json */,
+				D39168E521C7D1F9005CC483 /* ZoneInfos_v2.realm */,
+			);
+			path = v2;
 			sourceTree = "<group>";
 		};
 		D3E385A21D79A14800D05996 = {
@@ -333,6 +344,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D368F59B21A6EC2300243264 /* Main.storyboard in Resources */,
+				D39168E621C7D1F9005CC483 /* ZoneInfos_v2.realm in Resources */,
+				D39168E421C7CB50005CC483 /* ZealandZones_v2.json in Resources */,
 				D368F59A21A6EC2300243264 /* LaunchScreen.storyboard in Resources */,
 				D368F5A321A6EC7C00243264 /* Assets.xcassets in Resources */,
 				D368F5A221A6EC7C00243264 /* ZealandZones_v1.json in Resources */,
@@ -421,7 +434,6 @@
 				D368F59121A6EBCF00243264 /* MapDataModel.swift in Sources */,
 				D368F59421A6EBCF00243264 /* MapContentViewController.swift in Sources */,
 				D3E385AF1D79A14800D05996 /* AppDelegate.swift in Sources */,
-				D368F59021A6EBCF00243264 /* MapDataSource.swift in Sources */,
 				D368F59221A6EBCF00243264 /* MapViewController.swift in Sources */,
 				D368F59321A6EBCF00243264 /* OptionsViewController.swift in Sources */,
 			);
