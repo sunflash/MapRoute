@@ -11,7 +11,7 @@ import MapKit
 
 // swiftlint:disable file_length
 
-//------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 // MARK: - MapViewControllerDelegate
 
 protocol MapViewControllerDelegate: AnyObject {
@@ -30,7 +30,7 @@ extension MapViewControllerDelegate { // Delegate default
     func exceedMaxSelectedZoneLimit() {} // Optional
 }
 
-//------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 // MARK: - MapViewControllerDataSource
 
 protocol MapViewControllerDataSource: AnyObject {
@@ -38,7 +38,7 @@ protocol MapViewControllerDataSource: AnyObject {
     func zoneData(completion: @escaping ([String: FareZone], [MKPolygon], [ZoneAnnotation]) -> Void)
 }
 
-//------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 // MARK: - Map View Controller Objects
 
 struct FareZone {
@@ -61,7 +61,7 @@ class LocationAnnotation: MKPointAnnotation {
     var showCalloutDuration: Double?
 }
 
-//------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 // MARK: - MapViewController
 
 class MapViewController: UIViewController, MKMapViewDelegate {
@@ -115,7 +115,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private(set) var defaultRegion: MKCoordinateRegion?
     private(set) var isNeighbourZoneHidden = false
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - View
 
     override func viewDidLoad() {
@@ -208,7 +208,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - MapView UI
 
     private enum ZonePolygonHighlightState {
@@ -293,7 +293,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.mapView.setVisibleMapRect(zoomMapRect, edgePadding: edgePadding, animated: animated)
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - User Action (Public)
 
     func displayJourney(zones: Set<String>? = nil, locations: [LocationAnnotation]? = nil, route: [CLLocationCoordinate2D]? = nil) {
@@ -373,7 +373,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.defaultRegion = region
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - User Action (Private)
 
     @objc private func handleMapTap(tap: UIGestureRecognizer) {
@@ -587,7 +587,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return (selectedZones.count >= maxLimit)
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - Map Help Function
 
     class func convertMapRegionToMapRect(region: MKCoordinateRegion) -> MKMapRect {
@@ -617,7 +617,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return (mapRect.contains(mapPoint))
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - MapView Function
 
     private var areaOverlay: MKOverlay?
@@ -660,7 +660,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - Configure annotation
 
     private func configureZoneNumberAnnotation(mapView: MKMapView, zoneAnnotation: ZoneAnnotation) -> MKAnnotationView {
@@ -745,7 +745,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         hideCallout(hideCalloutTime)
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - MapView Delegate
 
     private let hiddenZoneAnnotationDelta = 0.55

@@ -12,7 +12,7 @@ class MapContentViewController: UIViewController {
 
     private weak var mapViewController: MapViewController?
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - View
 
     override func viewDidLoad() {
@@ -30,7 +30,7 @@ class MapContentViewController: UIViewController {
         self.mapViewController?.showZoneLabels = true
     }
 
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // MARK: - Navigation
 
     private let mapViewControllerSegueIdentifier = "MapViewController"
