@@ -25,7 +25,7 @@ class ZoneInfo: Object {
     let polygonCoordinates = List<Coordinate>()
 
     override static func primaryKey() -> String? {
-        return "zoneNumber"
+        "zoneNumber"
     }
 }
 
@@ -155,7 +155,7 @@ extension ConvertMapData {
                 zoneData.center = center
                 polygonCoordinates.forEach {zoneData.polygonCoordinates.append($0)}
 
-                realm.add(zoneData, update: true)
+                realm.add(zoneData, update: .all)
             }
 
             try? realm.commitWrite()

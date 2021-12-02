@@ -14,7 +14,7 @@ import MapKit
 //------------------------------------------------------------------------------------------
 // MARK: - MapViewControllerDelegate
 
-protocol MapViewControllerDelegate: class {
+protocol MapViewControllerDelegate: AnyObject {
     func shoudSelectRoute(index: Int) -> Bool
     func selectedZones(zones: Set<String>)
     func selectedZoneIsNotConnected()
@@ -23,7 +23,7 @@ protocol MapViewControllerDelegate: class {
 
 extension MapViewControllerDelegate { // Delegate default
     func shoudSelectRoute(index: Int) -> Bool {
-        return true
+        true
     }
     func selectedZones(zones: Set<String>) {} // Optional
     func selectedZoneIsNotConnected() {} // Optional
@@ -33,7 +33,7 @@ extension MapViewControllerDelegate { // Delegate default
 //------------------------------------------------------------------------------------------
 // MARK: - MapViewControllerDataSource
 
-protocol MapViewControllerDataSource: class {
+protocol MapViewControllerDataSource: AnyObject {
 
     func zoneData(completion: @escaping ([String: FareZone], [MKPolygon], [ZoneAnnotation]) -> Void)
 }
@@ -132,7 +132,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     private func configureMapView() {
 
         self.addMapOverlays()
-        self.mapView.showsPointsOfInterest = false
         self.mapView.isRotateEnabled = false
         self.mapView.isPitchEnabled = false
         if #available(iOS 9.0, *) {
